@@ -27,7 +27,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Html->meta('icon') ?>
 
     <?= $this->Html->css('bootstrap.min.css') ?>
-    <!--<?= $this->Html->css('cake.css') ?>-->
+    <?= $this->Html->css('main.css') ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
@@ -56,5 +56,79 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     </div>
     <?= $this->Html->script('jquery-2.1.1.min') ?>
     <?= $this->Html->script('bootstrap.min') ?>
+    <?= $this->Html->script('jquery.autocomplete.min') ?>
+    <script>
+        function agregarVisitanteTable (values) {
+            var $this = $('#tblVisitantes'),
+                $noData = $this.children('.no-data'),
+                tr = '<tr data-id="'+ values.id +'"><td>'+ values.documento_numero +'</td>'+
+                    '<td>'+ values.persona_nombre +'</td>'+
+                    '<td>'+ values.persona_apellidos +'</td>'+
+                    '<td><button type="button" class="btn btn-xs btn-danger">Eliminar</button></td></tr>';
+            
+            if ($noData.length) {
+                $noData.remove();
+            }
+
+            $this.append(tr);
+            $('#frm-visita').prepend('<input type="hidden" name="visitante_id[]" value="'+ values.id +'" id="vit'+values.id+'">');
+        }
+        function getData (id, obj) {
+            $.getJSON('persona/show/' + id, function(rec) {
+                var $form = $(obj).closest('form');
+                $form.find('[name=persona_id]').val(rec.id);
+                $form.find('[name=documento_numero]').val(rec.documento_numero);
+                $form.find('[name=persona_nombre]').val(rec.persona_nombre);
+                $form.find('[name=persona_apepat]').val(rec.persona_apepat);
+                $form.find('[name=persona_apemat]').val(rec.persona_apemat);
+            });
+        }
+        $('#frm-visitante').on('submit', function(e) {
+            e.preventDefault();
+            var $this = $(this),
+                data = $this.serialize(),
+                $inputs = $this.find(':input');
+
+            $inputs.prop('disabled', true);
+            $.ajax({
+                'url': $this.attr('action'),
+                'type': 'POST',
+                'data': data,
+                dataType: 'json'
+            }).done(function(rec) {
+                $this.trigger('reset');
+                agregarVisitanteTable(rec);
+                $this.closest('.modal').modal('hide');
+            }).fail(function(xhr) {
+                alert(xhr.responseJSON.message);
+                console.log();
+            }).always(function() {
+                $inputs.prop('disabled', false);
+            })
+        });
+        $('#tblVisitantes').on('click', '.btn-danger', function() {
+            if(confirm('Seguro de eliminar esta persona de esta visita?')) {
+                var $this = $(this),
+                    $tr = $this.closest('tr');
+
+                $('#vit' + $tr.data('id')).remove();
+                $tr.fadeOut('fast', function() {
+                    $tr.remove();
+                });
+            }
+        });
+        var $search = $('#search_persona_visitante');
+        if ($search.length) {
+            var options = {
+                serviceUrl: '/persona/search',
+                minChars: 3,
+                onSelect: function (suggestion) {
+                    getData(suggestion.data, this);
+                }
+            };
+            $search.autocomplete(options);
+            $('#search_persona_visita').autocomplete(options);
+        }
+    </script>
 </body>
 </html>

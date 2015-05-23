@@ -1,7 +1,7 @@
 <h1>Dashboard</h1>
 <hr>
 <?php echo $this->Flash->render() ?>
-<?php echo $this->Form->create() ?>
+<?php echo $this->Form->create($persona, ['action' => 'registrarVisita', 'id' => 'frm-visita']) ?>
 	<fieldset>
 		<legend>Datos de la Visita</legend>
 		<div class="form-group">
@@ -31,11 +31,20 @@
 	</fieldset>
 	<fieldset>
 		<legend>Datos Empleado Público</legend>
+		<input type="hidden" name="persona_id" value="">
 		<div class="form-group">
 			<div class="row">
 				<label for="" class="control-label col-sm-2">Buscar Persona</label>
 				<div class="col-sm-8">
-					<input type="search" id="search_persona" class="form-control">
+					<input type="search" id="search_persona_visita" class="form-control search_persona">
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="row">
+				<label for="" class="control-label col-sm-2">Tipo Documento</label>
+				<div class="col-sm-8">
+					<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control']) ?>
 				</div>
 			</div>
 		</div>
@@ -92,8 +101,8 @@
 					<th>Apellidos</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr>
+			<tbody id="tblVisitantes">
+				<tr class="no-data">
 					<td colspan="4" class="text-center">No hay registros que mostrar</td>
 				</tr>
 			</tbody>
@@ -109,18 +118,19 @@
   <div class="modal-dialog" style="z-index:2000">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Registra Visitante</h4>
-      </div>
-      <div class="modal-body">
-      	<?php echo $this->Form->create($visitante) ?>
-        <fieldset>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title">Registra Visitante</h4>
+	</div>
+	<div class="modal-body">
+		<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
+		<input type="hidden" name="persona_id" value="">
+		<fieldset>
 			<legend>Información Básica</legend>
 			<div class="form-group">
 				<div class="row">
 					<label for="" class="control-label col-sm-4">Buscar Persona</label>
 					<div class="col-sm-8">
-						<input type="search" id="search_persona" class="form-control">
+						<input type="search" id="search_persona_visitante" class="form-control search_persona">
 					</div>
 				</div>
 			</div>
@@ -128,7 +138,7 @@
 				<div class="row">
 					<label for="" class="control-label col-sm-4">Tipo Documento</label>
 					<div class="col-sm-8">
-						<?php echo $this->Form->select('documento_numero', $documentos, ['type' => 'select', 'class' => 'form-control']) ?>
+						<?php echo $this->Form->select('tipodocumento_id', $documentos, ['type' => 'select', 'class' => 'form-control']) ?>
 					</div>
 				</div>
 			</div>
@@ -177,7 +187,7 @@
 			</div>
 			<div class="form-group">
 				<div class="row">
-					<label for="" class="control-label col-sm-4">Apellido Materno</label>
+					<label for="" class="control-label col-sm-4">Nombre Empresa</label>
 					<div class="col-sm-8">
 						<?php echo $this->Form->text('persona_nombres', ['class' => 'form-control']) ?>
 					</div>
@@ -187,7 +197,7 @@
 		<hr>
 		<div class="text-right">
 			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-        	<button type="button" class="btn btn-primary">Guardar</button>
+        	<button class="btn btn-primary">Guardar</button>
 		</div>
 		<?php echo $this->Form->end() ?>
       </div>
