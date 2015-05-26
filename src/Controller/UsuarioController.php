@@ -17,6 +17,7 @@ class UsuarioController extends AppController
 
 	public function login()
 	{
+		$this->layout = 'signin';
 		if ($this->request->is('post')) {
 			$user = $this->Auth->identify();
 			if ($user) {
