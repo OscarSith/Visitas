@@ -1,218 +1,239 @@
-<h1 class="page-header"><?php echo $title ?></h1>
-<?php echo $this->Flash->render() ?>
-<?php echo $this->Form->create($persona, ['action' => 'registrarVisita', 'id' => 'frm-visita']) ?>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">Datos de la Visita</h3>
+<div id="content-visita">
+	<h1 class="page-header"><?php echo $title ?></h1>
+	<?php echo $this->Flash->render() ?>
+	<div>
+	<?php echo $this->Form->create($persona, ['action' => 'registrarVisita', 'id' => 'frm-visita']) ?>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Datos de la Visita</h3>
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Fecha de Visita</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" name="visita_fecha" id="Visitavisita_fecha" placeholder="dd-mm-yyyy" maxlength="10"/>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Lugar de reunión</label>
+						<div class="col-sm-4">
+			        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control']) ?>
+						</div>
+					</div>
+		        </div>
+		        <div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Motivo de reunión</label>
+						<div class="col-sm-4">
+			        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control']) ?>
+						</div>
+					</div>
+		        </div>
+			</div>
 		</div>
-		<div class="panel-body">
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Fecha de Visita</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" name="data[Visita][visita_fecha]" id="Visitavisita_fecha" placeholder="yyyy-mm-dd" maxlength="10"/>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Datos Empleado Público</h3>
+			</div>
+			<div class="panel-body">
+				<input type="hidden" name="personal_id" value="">
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Buscar Persona</label>
+						<div class="col-sm-8">
+							<div class="input-group">
+								<input type="search" id="search_persona_visita" class="form-control search_persona">
+								<span class="input-group-btn visibility-hidden">
+									<button class="btn btn-danger btn-remove-text-autoc" type="button"><i class="fa fa-times"></i></button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Tipo Documento</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control']) ?>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Número DNI</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->text('documento_numero', ['class' => 'form-control']) ?>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Nombres</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->text('persona_nombre', ['class' => 'form-control']) ?>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Apellido Paterno</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->text('persona_apepat', ['class' => 'form-control']) ?>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Apellido Materno</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->text('persona_apemat', ['class' => 'form-control']) ?>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Cargo</label>
+						<div class="col-sm-8">
+							<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control']) ?>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Lugar de reunión</label>
-					<div class="col-sm-4">
-		        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control']) ?>
-					</div>
-				</div>
-	        </div>
-	        <div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Motivo de reunión</label>
-					<div class="col-sm-4">
-		        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control']) ?>
-					</div>
-				</div>
-	        </div>
 		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Visitantes</h3>
+			</div>
+			<div class="panel-body">
+				<input type="button" value="Agregar Visitante" class="btn btn-default" data-toggle="modal" data-target="#modal-visitante">
+				<hr>
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th>N</th>
+							<th>Documento</th>
+							<th>Nombres</th>
+							<th>Apellidos</th>
+						</tr>
+					</thead>
+					<tbody id="tblVisitantes">
+						<tr class="no-data">
+							<td colspan="4" class="text-center">No hay registros que mostrar</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="form-group">
+			<?php echo $this->Form->button(__('Enviar'), ['class' => 'btn btn-primary']); ?>
+			<?php echo $this->Form->button(__('Limpiar'), ['type' => 'reset', 'class' => 'btn btn-default']); ?>
+		</div>
+		<br><br>
+	<?php echo $this->Form->end() ?>
 	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">Datos Empleado Público</h3>
+	<div class="modal fade" id="modal-visitante">
+	  <div class="modal-dialog" style="z-index:2000">
+	    <div class="modal-content">
+	      <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Registra Visitante</h4>
 		</div>
-		<div class="panel-body">
-			<input type="hidden" name="personal_id" value="">
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Buscar Persona</label>
-					<div class="col-sm-8">
-						<input type="search" id="search_persona_visita" class="form-control search_persona">
+		<div class="modal-body">
+			<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
+			<input type="hidden" name="visitante_id" value="">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title"></h4>Información Básica
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Buscar Persona</label>
+							<div class="col-sm-8">
+								<div class="input-group">
+									<input type="search" id="search_persona_visitante" class="form-control search_persona">
+									<span class="input-group-btn visibility-hidden">
+										<button class="btn btn-danger btn-remove-text-autoc" type="button"><i class="fa fa-times"></i></button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Tipo Documento</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->select('tipodocumento_id', $documentos, ['type' => 'select', 'class' => 'form-control']) ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Número DNI</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('documento_numero', ['class' => 'form-control']) ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Nombres</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('persona_nombre', ['class' => 'form-control']) ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Apellido Paterno</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('persona_apepat', ['class' => 'form-control']) ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Apellido Materno</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('persona_apemat', ['class' => 'form-control']) ?>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Tipo Documento</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control']) ?>
+			<div class="panel panel-default">
+				<div class="panel-heading"><h4 class="panel-title">Datos de la empresa</h4></div>
+				<div class="panel-body">
+					<input type="hidden" name="empresa_id">
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Número de Ruc</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('ruc_numero', ['class' => 'form-control', 'id' => 'ruc_numero']) ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label for="" class="control-label col-sm-4">Nombre Empresa</label>
+							<div class="col-sm-8">
+								<?php echo $this->Form->text('empresa_nombre', ['class' => 'form-control']) ?>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Número DNI</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('documento_numero', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Nombres</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_nombre', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Apellido Paterno</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_apepat', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Apellido Materno</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_apemat', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-2">Cargo</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">Visitantes</h3>
-		</div>
-		<div class="panel-body">
-			<input type="button" value="Agregar Visitante" class="btn btn-default" data-toggle="modal" data-target="#modal-visitante">
 			<hr>
-			<table class="table table-condensed">
-				<thead>
-					<tr>
-						<th>N</th>
-						<th>Documento</th>
-						<th>Nombres</th>
-						<th>Apellidos</th>
-					</tr>
-				</thead>
-				<tbody id="tblVisitantes">
-					<tr class="no-data">
-						<td colspan="4" class="text-center">No hay registros que mostrar</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+			<div class="text-right">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	        	<button class="btn btn-primary">Guardar</button>
+			</div>
+			<?php echo $this->Form->end() ?>
+	      </div>
+	    </div>
+	  </div>
 	</div>
-	<div class="form-group">
-		<?php echo $this->Form->button(__('Enviar'), ['class' => 'btn btn-primary']); ?>
-		<?php echo $this->Form->button(__('Limpiar'), ['type' => 'reset', 'class' => 'btn btn-default']); ?>
-	</div>
-	<br><br>
-<?php echo $this->Form->end() ?>
-<div class="modal fade" id="modal-visitante">
-  <div class="modal-dialog" style="z-index:2000">
-    <div class="modal-content">
-      <div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		<h4 class="modal-title">Registra Visitante</h4>
-	</div>
-	<div class="modal-body">
-		<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
-		<input type="hidden" name="visitante_id" value="">
-		<fieldset>
-			<legend>Información Básica</legend>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Buscar Persona</label>
-					<div class="col-sm-8">
-						<input type="search" id="search_persona_visitante" class="form-control search_persona">
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Tipo Documento</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->select('tipodocumento_id', $documentos, ['type' => 'select', 'class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Número DNI</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('documento_numero', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Nombres</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_nombre', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Apellido Paterno</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_apepat', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Apellido Materno</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('persona_apemat', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-		</fieldset>
-		<fieldset>
-			<legend>Datos de la empresa</legend>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Número de Ruc</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('ruc_numero', ['class' => 'form-control', 'id' => 'ruc_numero']) ?>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Nombre Empresa</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('empresa_nombre', ['class' => 'form-control']) ?>
-					</div>
-				</div>
-			</div>
-		</fieldset>
-		<hr>
-		<div class="text-right">
-			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-        	<button class="btn btn-primary">Guardar</button>
-		</div>
-		<?php echo $this->Form->end() ?>
-      </div>
-    </div>
-  </div>
 </div>
