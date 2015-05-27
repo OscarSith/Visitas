@@ -10,7 +10,7 @@
 				<div class="row">
 					<label for="" class="control-label col-sm-2">Fecha de Visita</label>
 					<div class="col-sm-3">
-						<?php echo $this->Form->text('visita_fecha', ['class' => 'form-control']) ?>
+						<input type="text" class="form-control" name="data[Visita][visita_fecha]" id="Visitavisita_fecha" placeholder="yyyy-mm-dd" maxlength="10"/>
 					</div>
 				</div>
 			</div>

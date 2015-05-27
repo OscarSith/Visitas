@@ -7,6 +7,7 @@
 			<th>Visitante</th>
 			<th>Fecha</th>
 			<th>Hora</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -17,6 +18,23 @@
 				<td><?php echo $key->pe['persona_nombres'] ?></td>
 				<td><?php echo $key->visita_fecha ?></td>
 				<td><?php echo $key->visita_horaprogramada ?></td>
+				<td>
+					<div class="btn-group">
+					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span>
+					  </button>
+					  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+					  	<?php if ($key->estado=='R'): ?>
+					  		<li><a href="#" >Hora Inicio</a></li>	
+					  		<li><a href="#">Anular</a></li>
+					  	<?php elseif ($key->estado=='D') : ?>
+					  		<li><a href="#">Hora Salida</a></li>	
+					  	<?php elseif ($key->estado=='A') : ?>
+					  		<li><a href="#">Activar</a></li>	
+					  	<?php endif ?>
+					  </ul>
+					</div>
+
+				</td>
 			</tr>
 		<?php $n++;
 		endforeach ?>

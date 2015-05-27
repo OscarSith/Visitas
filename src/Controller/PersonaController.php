@@ -144,7 +144,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visitante');
 
 		$visitas = $this->Visita->find()
-			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada'])
+			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','estado'])
 			->innerJoin(
 				['vv' => 'Visitavisitante'],
 				['visita.id = vv.visita_id']
