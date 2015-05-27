@@ -5,6 +5,16 @@ use Cake\Event\Event;
 
 class PersonaController extends AppController
 {
+	public $paginate = [
+        'limit' => 3
+    ];
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->loadComponent('Paginator');
+    }
+
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
@@ -142,7 +152,6 @@ class PersonaController extends AppController
 		$this->loadModel('Visitavisitante');
 		$this->loadModel('Visita');
 		$this->loadModel('Visitante');
-
 		$visitas = $this->Visita->find()
 			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','estado'])
 			->innerJoin(
@@ -164,19 +173,33 @@ class PersonaController extends AppController
 			->innerJoin(
 				['pr' => 'Persona'],
 				['pl.persona_id = pr.id']
-			)
-			->all();
-		// select  from visita as v
-		// join visitavisitante as vv on v.id = vv.visita_id
-		// join visitante as vi on vv.visitante_id = vi.id
-		// join persona as pe on vi.persona_id = pe.id 
-		// join personal as pl on v.personal_id = pl.id
-		// join persona as pr on pl.persona_id = pr.id 
-		// where v.id = 4
+			);
 
+		$this->set('visitas', $this->paginate($visitas));	
+		
 		$authUser = $this->Auth->user('usuario_login');
 		$title = 'Listado de visitas';
-		$this->set(compact('visitas', 'authUser', 'title'));
+
+		$visitavisitante = $this->Visitavisitante->newEntity();
+		$this->set(compact('visitas', 'authUser', 'title','visitavisitante'));
+	}
+
+	public function registrarHoraInreso()
+	{
+		if ($this->request->is('post')) {
+			$this->loadModel('Visitavisitante');
+			$this->loadModel('Visita');			
+			if (!empty($this->request->data['id'])) {
+				$visitante = $this->Visitavisitante->query()
+								->update()
+								->set(['visita_horaingeso' => $this->request->data['visita_horaingreso']])
+								->set(['estado'=>'D'])								
+								->where(['id' => $this->request->data['id']])
+								->execute();
+					$this->Flash->success(__('Visitante registrado con éxito.'));
+			}
+			return $this->redirect(['action'=>'visitas']);
+		} 
 	}
 
 	public function search()

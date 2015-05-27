@@ -72,16 +72,16 @@ $cakeDescription = 'Admin - Visitas';
     <?= $this->Html->script('jquery.autocomplete.min') ?>
     <?= $this->Html->script('bootstrap-datepicker') ?>
     <?= $this->Html->script('bootstrap-datepicker.es') ?>    
+    <?= $this->Html->script('visita') ?>    
     <script>
-        $(document).ready(function() {
-            $( "#Visitavisita_fecha" ).datepicker({
+        
+        $( "#Visitavisita_fecha" ).datepicker({
                     format: "dd/mm/yyyy",
                     autoclose: true,
                     language: "es",
                     yearRange: "1930:1996"
-            });
         });
-        
+
         function agregarVisitanteTable (values) {
             var $this = $('#tblVisitantes'),
                 $noData = $this.children('.no-data'),
