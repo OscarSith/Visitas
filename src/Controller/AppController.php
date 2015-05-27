@@ -52,7 +52,6 @@ class AppController extends Controller
             'loginAction' => [
                 'controller' => 'Usuario',
                 'action' => 'login',
-                // 'plugin' => 'Usuario'
             ],
             'authenticate' => [
                 'Form' => [

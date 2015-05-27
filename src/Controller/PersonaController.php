@@ -112,14 +112,27 @@ class PersonaController extends AppController
 		if ($this->request->is('ajax')) {
 			$this->loadComponent('RequestHandler');
 
-
+			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['persona_nombres'] = $this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
+			$this->request->data['usuario_creador'] = 'Administrador';
+
 			if (empty($this->request->data['visitante_id'])) {
 				$this->loadModel('Visitante');
-				$this->loadModel('Empresa');
 
-				$this->request->data['fecha_creacion'] = date('Y-m-d');
-				$this->request->data['usuario_creador'] = 'Administrador';
+				$persona = $this->Persona->newEntity($this->request->data);
+				$this->Persona->save($persona);
+				$this->request->data['persona_id'] = $persona->id;
+
+				$visitante = $this->Visitante->newEntity($this->request->data);
+				$this->Visitante->save($visitante);
+			}
+
+			if (empty($this->request->data['empresa_id']) && $this->request->data['empresa_id'] != '') {
+				$this->loadModel('Empresa');
+				$this->loadModel('Empresavisitantes');
+
+				$this->request->data['tipodocumento_id'] = 5;
+				$this->request->data['persona_nombres'] = $this->request->data['empresa_nombre'];
 
 				$persona = $this->Persona->newEntity($this->request->data);
 				$this->Persona->save($persona);
@@ -128,8 +141,9 @@ class PersonaController extends AppController
 				$empresa = $this->Empresa->newEntity($this->request->data);
 				$this->Empresa->save($empresa);
 
-				$visitante = $this->Visitante->newEntity($this->request->data);
-				$this->Visitante->save($visitante);
+				$this->request->data['empresa_id'] = $empresa->id;
+				$empresavisitantes = $this->Empresavisitantes->newEntity($this->request->data);
+				$this->Empresavisitantes->save($empresavisitantes);
 			}
 
 			$data = json_encode([
@@ -178,6 +192,7 @@ class PersonaController extends AppController
 		$this->set('visitas', $this->paginate($visitas));	
 		
 		$authUser = $this->Auth->user('usuario_login');
+		$visitas = $this->paginate($visitas);
 		$title = 'Listado de visitas';
 
 		$visitavisitante = $this->Visitavisitante->newEntity();
@@ -241,7 +256,7 @@ class PersonaController extends AppController
 	{
 		$data = $this->Persona
 				->find()
-				->select(['v.id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero'])
+				->select(['v.id', 'id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero'])
 				->innerJoin(
 					['v' => 'visitante'],
 					['persona.id = v.persona_id']
@@ -252,7 +267,7 @@ class PersonaController extends AppController
 		$this->loadModel('Empresavisitantes');
 		$data2 = $this->Empresavisitantes
 			->find()
-			->select(['p.persona_nombres', 'p.documento_numero'])
+			->select(['empresa_id', 'p.persona_nombres', 'p.documento_numero'])
 			->innerJoin(
 				['e' => 'empresa'],
 				['empresavisitantes.empresa_id = e.id']
@@ -261,7 +276,7 @@ class PersonaController extends AppController
 				['p' => 'persona'],
 				['p.id = e.persona_id']
 			)
-			->where(['visitantes_id =' => $id])
+			->where(['visitante_id =' => $id])
 			->first();
 
 		$this->toJson($data, false, $data2, true);
@@ -269,9 +284,9 @@ class PersonaController extends AppController
 
 	public function showByRuc()
 	{
+		$this->loadModel('Empresa');
 		$data = $this->Empresa->find()
-			->find()
-			->select(['data' => 'id', 'value' => 'p.persona_nombres'])
+			->select(['data' => 'empresa.id', 'value' => 'p.persona_nombres'])
 			->innerJoin(
 				['p' => 'persona'],
 				['empresa.persona_id = p.id']
