@@ -32,23 +32,26 @@ class UsuarioController extends AppController
 				
 
 			}else if ($data->tipo_usuario=='E') {
-				//login
-				//
+				$user = $this->Auth->identify();
+        		if ($user) {
+					$this->loadModel('Personal');
 
-				$this->loadModel('Personal');
+					$personal = $this->Personal
+									->find()
+									->where(['id' => $data->personal_id])
+	    							->first();
 
-				$personal = $this->Personal
-								->find()
-								->where(['id' => $data->personal_id])
-    							->first();
+	    			
+	    			$this->request->session()->write('usuario.sede', $personal->sede_id);
+	    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
 
-    			
-    			$this->request->session()->write('usuario.sede', $personal->sede_id);
-    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
-
-    			$this->Auth->setUser($data);
-
-				return $this->redirect($this->Auth->redirectUrl());
+	    			$this->Auth->setUser($data);
+	    			debug($data);
+	    			die();
+					return $this->redirect($this->Auth->redirectUrl());
+				}else{
+					$this->Flash->error(__('Clave incorrecta.'));	
+				}
 
 			}else{
 				$this->Flash->error(__('Usted no posee cuenta de usuario.'));
