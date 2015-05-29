@@ -36,6 +36,21 @@
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
+				<h3 class="panel-title">Organigrama</h3>
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<div class="row">
+						<label class="control-label col-sm-2">Organigrama</label>
+						<div class="col-sm-4">
+							<?php echo $this->Form->select('organigrama_id', $organigramas, ['class' => 'form-control organigrama_cbo', 'id' => 'organigrama_id']) ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
 				<h3 class="panel-title">Datos Empleado Público</h3>
 			</div>
 			<div class="panel-body">
@@ -229,7 +244,7 @@
 			<hr>
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-	        	<button class="btn btn-primary">Guardar</button>
+				<button class="btn btn-primary">Guardar</button>
 			</div>
 			<?php echo $this->Form->end() ?>
 	      </div>
@@ -237,3 +252,15 @@
 	  </div>
 	</div>
 </div>
+<script id="cbo-organigramas" type="text/x-handlebars-template">
+  <div class="form-group form-group-sm">
+		<div class="row">
+			<label class="control-label col-sm-2">{{ label }}</label>
+			<div class="col-sm-4">
+				<select name="organigrama" class="form-control organigrama_cbo">
+					{{{ options }}}
+				</select>
+			</div>
+		</div>
+	</div>
+</script>

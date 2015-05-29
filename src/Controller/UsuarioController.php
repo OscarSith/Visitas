@@ -17,40 +17,31 @@ class UsuarioController extends AppController
 
 	public function login()
 	{
-
 		$this->layout = 'signin';
 
 		if ($this->request->is('post')) {
 
-			//
-			$data = $this->Usuario
-						->find()
+			$data = $this->Usuario->find()
     					->where(['usuario_login' => $this->request->data['usuario_login']])
     					->first();
 
 			if ($data->tipo_usuario=='I') {
-				
 
-			}else if ($data->tipo_usuario=='E') {
-				$user = $this->Auth->identify();
-        		if ($user) {
+			} else if ($data->tipo_usuario=='E') {
+        		if ($this->Auth->identify()) {
 					$this->loadModel('Personal');
 
-					$personal = $this->Personal
-									->find()
+					$personal = $this->Personal->find()
 									->where(['id' => $data->personal_id])
 	    							->first();
 
-	    			
 	    			$this->request->session()->write('usuario.sede', $personal->sede_id);
 	    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
 
 	    			$this->Auth->setUser($data);
-	    			debug($data);
-	    			die();
 					return $this->redirect($this->Auth->redirectUrl());
 				}else{
-					$this->Flash->error(__('Clave incorrecta.'));	
+					$this->Flash->error(__('Clave incorrecta.'));
 				}
 
 			}else{
@@ -59,7 +50,7 @@ class UsuarioController extends AppController
 		}
 	}
 
-public function add()
+	public function add()
 	{
 		
 		$this->loadModel('Persona');
@@ -107,6 +98,8 @@ public function add()
 
 	public function registrar()
 	{
+		$this->layout = 'signin';
+
 		$usuario = $this->Usuario->newEntity();
 		$this->loadModel('Tipodocumento');
 		$this->loadModel('Cargo');

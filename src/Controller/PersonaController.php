@@ -19,6 +19,7 @@ class PersonaController extends AppController
 	{
 		parent::beforeFilter($event);
 	}
+
 	public function index()
 	{
 		$this->loadModel('Lugar');
@@ -26,11 +27,13 @@ class PersonaController extends AppController
 		$this->loadModel('Visitante');
 		$this->loadModel('Tipodocumento');
 		$this->loadModel('Cargo');
+		$this->loadModel('Organigrama');
 
 		$lugares = $this->Lugar->find('list',  [
 			'keyField' => 'id',
 			'valueField' => 'lugar_nombre'
-		]);
+		])
+		->where(['sede_id' => $this->request->session()->read('usuario.sede')]);
 		$lugares = $lugares->toArray();
 
 		$motivos = $this->Motivo->find('list',  [
@@ -51,12 +54,20 @@ class PersonaController extends AppController
 		]);
 		$cargos = $cargos->toArray();
 
+		$organigramas = $this->Organigrama->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'organigrama_nombre'
+		])
+		->where(['id' => 1]);
+
+		$organigramas = $organigramas->toArray();
+
 		$persona = $this->Persona->newEntity();
 
 		$title = 'Registro de Visitas';
 		$authUser = $this->Auth->user('usuario_login');
 
-		$this->set(compact('persona', 'lugares', 'motivos', 'documentos', 'cargos', 'title', 'authUser'));
+		$this->set(compact('persona', 'lugares', 'motivos', 'documentos', 'cargos', 'title', 'authUser', 'organigramas'));
 	}
 
 	public function registrarVisita()
@@ -334,5 +345,13 @@ class PersonaController extends AppController
 
 		$this->autoRender = false;
 		echo $data;
+	}
+
+	public function getOrganigramaByPadre($id)
+	{
+		$this->loadModel('Organigrama');
+		$data = $this->Organigrama->find()->where(['padre_id' => $id]);
+		$this->autoRender = false;
+		echo json_encode($data);
 	}
 }

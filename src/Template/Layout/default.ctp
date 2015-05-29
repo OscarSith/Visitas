@@ -36,7 +36,7 @@ $cakeDescription = 'Admin - Visitas';
                     <ul class="dropdown-menu">
                         <li>
                             <!-- <i class="fa fa-fw fa-power-off"></i>  -->
-                            <?php echo $this->Html->link('Salir', ['controller' => 'Persona', 'action' => 'logout']) ?>
+                            <?php echo $this->Html->link('Salir', ['controller' => 'Usuario', 'action' => 'logout']) ?>
                         </li>
                     </ul>
                 </li>
@@ -49,6 +49,11 @@ $cakeDescription = 'Admin - Visitas';
                     <li>
                         <a href="/persona/visitas">
                             <i class="fa fa-fw fa-bar-chart-o"></i> Visitas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/organigrama">
+                            <i class="fa fa-fw fa-bar-chart-o"></i> Organigrama
                         </a>
                     </li>
                 </ul>
@@ -72,6 +77,7 @@ $cakeDescription = 'Admin - Visitas';
     <?= $this->Html->script('jquery.autocomplete.min') ?>
     <?= $this->Html->script('bootstrap-datepicker') ?>
     <?= $this->Html->script('bootstrap-datepicker.es') ?>    
+    <script src="/bower_components/handlebars/handlebars.min.js"></script>
     <?= $this->Html->script('visita') ?>
     <?= $this->Html->script('registroVisita') ?>
 </body>

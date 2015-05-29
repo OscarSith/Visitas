@@ -47,12 +47,12 @@ Router::scope('/', function ($routes) {
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
-    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+   $routes->connect('/', ['controller' => 'dashboard']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */
-    $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
+    //$routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
     /**
      * Connect catchall routes for all controllers.
@@ -71,10 +71,18 @@ Router::scope('/', function ($routes) {
      * routes you want in your application.
      */
     $routes->fallbacks('InflectedRoute');
+
+    Router::url('persona', ['controller' => 'persona']);
+    Router::connect('persona/getOrganigramaByPadre/:id',
+        ['controller' => 'persona', 'action' => 'getOrganigramaByPadre'],
+        [
+        // order matters since this will simply map ":id" to $articleId in your action
+        'pass' => ['id']
+    ]);
+    Router::url('empresa', ['controller' => 'empresa']);
+    Router::url('organigrama', ['controller' => 'organigrama']);
 });
 
-Router::url('empresa', ['controller' => 'empresa']);
-Router::url('persona', ['controller' => 'persona']);
 
 /**
  * Load all plugin routes.  See the Plugin documentation on
