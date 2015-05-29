@@ -17,43 +17,77 @@ class UsuarioController extends AppController
 
 	public function login()
 	{
+
 		$this->layout = 'signin';
+
 		if ($this->request->is('post')) {
-			$user = $this->Auth->identify();
-			if ($user) {
-				$this->Auth->setUser($user);
+
+			//
+			$data = $this->Usuario
+						->find()
+    					->where(['usuario_login' => $this->request->data['usuario_login']])
+    					->first();
+
+			if ($data->tipo_usuario=='I') {
+				
+
+			}else if ($data->tipo_usuario=='E') {
+				//login
+				//
+
+				$this->loadModel('Personal');
+
+				$personal = $this->Personal
+								->find()
+								->where(['id' => $data->personal_id])
+    							->first();
+
+    			
+    			$this->request->session()->write('usuario.sede', $personal->sede_id);
+    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
+
+    			$this->Auth->setUser($data);
+
 				return $this->redirect($this->Auth->redirectUrl());
-			} else {
-				$this->Flash->error(__('Username or password is incorrect'));
+
+			}else{
+				$this->Flash->error(__('Usted no posee cuenta de usuario.'));
 			}
 		}
 	}
 
-	public function add()
+public function add()
 	{
+		
 		$this->loadModel('Persona');
 		$this->loadModel('Personal');
 
 		if ($this->request->is('post')) {
 			$this->request->data['perfil_id'] = 1;
 			$this->request->data['fecha_creacion'] = date('Y-m-d H:i:s');
-			$this->request->data['usuario_creador'] = 'Administrador';
+			$this->request->data['usuario_creador'] = 'admin';
 
 			$persona = $this->Persona->newEntity();
 			$personal = $this->Personal->newEntity();
 
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat'];
 			$persona = $this->Persona->patchEntity($persona, $this->request->data);
+			
+			//debug($this->request->data);
+			//die();
+
 			if(!$this->Persona->save($persona)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
 
 			$this->request->data['persona_id'] = $persona->id;
 			$personal = $this->Personal->patchEntity($personal, $this->request->data);
+
+			
 			if(!$this->Personal->save($personal)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
-
+			$this->request->data['tipo_usuario'] = 'E';
 			$this->request->data['personal_id'] = $personal->id;
 			$hasher = new DefaultPasswordHasher();
 			$this->request->data['usuario_clave'] = $hasher->hash($this->request->data['usuario_clave']);
@@ -73,6 +107,8 @@ class UsuarioController extends AppController
 		$usuario = $this->Usuario->newEntity();
 		$this->loadModel('Tipodocumento');
 		$this->loadModel('Cargo');
+		$this->loadModel('Sede');
+		$this->loadModel('Organigrama');
 
 		$documentos = $this->Tipodocumento->find('list',  [
 			'keyField' => 'id',
@@ -84,9 +120,21 @@ class UsuarioController extends AppController
 			'valueField' => 'cargo_nombre'
 		]);
 
-		$cargos = $cargos->toArray();
+		$sedes = $this->Sede->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'sede_nombre'
+		]);
 
-		$this->set(compact('usuario', 'documentos', 'cargos'));
+		$organigramas = $this->Organigrama->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'organigrama_nombre'
+		]);
+
+		$cargos = $cargos->toArray();
+		$sedes 	= $sedes->toArray();
+		$organigramas = $organigramas->toArray();
+
+		$this->set(compact('usuario', 'documentos', 'cargos','sedes','organigramas'));
 	}
 
 	public function logout()

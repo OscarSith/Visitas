@@ -10,8 +10,7 @@ class Usuario extends Entity
 		'perfil_id' => true,
 		'usuario_login' => true,
 		'usuario_clave' => true,
-		'usuario_creador' => true,
-		'usuario_actualiza' => true
+		'tipo_usuario' => true,
 	];
 
 	public function _setUsuarioClave($value)

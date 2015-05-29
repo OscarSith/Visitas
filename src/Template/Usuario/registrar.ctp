@@ -6,6 +6,8 @@
 	echo $this->Form->select('tipodocumento_id', $documentos);
 	echo $this->Form->input('documento_numero');
 	echo $this->Form->input('cargo_id', $cargos, ['type' => 'select']);
+	echo $this->Form->input('organigrama_id', $organigramas, ['type' => 'select']);
+	echo $this->Form->input('sede_id', $sedes, ['type' => 'select']);
 	echo $this->Form->input('usuario_login');
 	echo $this->Form->input('usuario_clave', ['type' => 'password']);
 	echo $this->Form->button(__('Grabar'));
