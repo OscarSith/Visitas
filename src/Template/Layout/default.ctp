@@ -64,7 +64,7 @@ $cakeDescription = 'Admin - Visitas';
               <li><a href="#">Inicio</a></li>
               <li class="active"><?= $title ?></li>
             </ol>
-            <?= $this->Flash->render() ?>
+            <?php echo $this->Flash->render() ?>
             <div class="container-fluid">
                 <?= $this->fetch('content') ?>
             </div>

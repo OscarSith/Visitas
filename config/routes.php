@@ -37,7 +37,6 @@ use Cake\Routing\Router;
  * Note that `Route` does not do any inflections on URLs which will result in
  * inconsistently cased URLs when used with `:plugin`, `:controller` and
  * `:action` markers.
- *
  */
 Router::defaultRouteClass('Route');
 
@@ -48,12 +47,6 @@ Router::scope('/', function ($routes) {
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
    $routes->connect('/', ['controller' => 'dashboard']);
-
-    /**
-     * ...and connect the rest of 'Pages' controller's URLs.
-     */
-    //$routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
-
     /**
      * Connect catchall routes for all controllers.
      *

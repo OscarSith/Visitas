@@ -52,7 +52,6 @@ class UsuarioController extends AppController
 
 	public function add()
 	{
-		
 		$this->loadModel('Persona');
 		$this->loadModel('Personal');
 

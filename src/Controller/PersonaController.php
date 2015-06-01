@@ -87,18 +87,20 @@ class PersonaController extends AppController
 			$this->request->data['usuario_creador'] = 'Administrador';
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
 			$this->request->data['visita_horaprogramada'] = date('H:i:s');
+			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'];
 
-			if (empty($this->request->data['personal_id'])) {
+			if (empty($this->request->data['personal_id']) || $this->request->data['personal_id'] == '') {
+				$this->request->data['sede_id'] = 1;
 				$persona = $this->Persona->newEntity($this->request->data);
 				$this->Persona->save($persona);
 
 				$this->request->data['persona_id'] = $persona->id;
 				$personal = $this->Personal->newEntity($this->request->data);
 				$this->Personal->save($personal);
+				$this->request->data['personal_id'] = $personal->id;
 			}
 			// else {
 			// 	$personal = $this->Personal->find()->select(['id'])->where(['persona_id' => $this->request->data['persona_id']]);
-			// $this->request->data['personal_id'] = $personal->id;
 			// }
 
 			$visita = $this->Visita->newEntity($this->request->data);
@@ -126,19 +128,24 @@ class PersonaController extends AppController
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['persona_nombres'] = $this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
 			$this->request->data['usuario_creador'] = 'Administrador';
+			$nombre = $this->request->data['persona_nombre'];
 
 			if (empty($this->request->data['visitante_id'])) {
 				$this->loadModel('Visitante');
+				// $this->loadModel('Personal');
 
 				$persona = $this->Persona->newEntity($this->request->data);
 				$this->Persona->save($persona);
+
 				$this->request->data['persona_id'] = $persona->id;
+				// $personal = $this->Personal->newEntity($this->request->data);
+				// $this->Personal->save($personal);
 
 				$visitante = $this->Visitante->newEntity($this->request->data);
 				$this->Visitante->save($visitante);
 			}
 
-			if (empty($this->request->data['empresa_id']) && $this->request->data['empresa_id'] != '') {
+			if (empty($this->request->data['empresa_id']) && $this->request->data['empresa_id'] == '') {
 				$this->loadModel('Empresa');
 				$this->loadModel('Empresavisitantes');
 
@@ -149,6 +156,9 @@ class PersonaController extends AppController
 				$this->Persona->save($persona);
 				$this->request->data['persona_id'] = $persona->id;
 
+				$this->request->data['persona_apepat'] = null;
+				$this->request->data['persona_apemat'] = null;
+				$this->request->data['persona_nombre'] = null;
 				$empresa = $this->Empresa->newEntity($this->request->data);
 				$this->Empresa->save($empresa);
 
@@ -160,10 +170,9 @@ class PersonaController extends AppController
 			$data = json_encode([
 				'id' => $this->request->data['visitante_id'],
 				'documento_numero' => $this->request->data['documento_numero'],
-				'persona_nombre' => $this->request->data['persona_nombre'],
+				'persona_nombre' => $nombre,
 				'persona_apellidos' => $this->request->data['persona_nombres']
 			]);
-			// $this->set('_serialize', 'data');
 			$this->autoRender = false;
 			echo $data;
 		} else {
