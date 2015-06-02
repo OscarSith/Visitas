@@ -137,5 +137,7 @@ if ($search.length) {
 }
 
 $('#modal-visitante').on('hide.bs.modal', function() {
-	$(this).find('[name=visitante_id]').val('');
+	var $this = $(this);
+    $this.find('[name=visitante_id]').val('');
+    $this.find('.btn-remove-text-autoc').click();
 });
