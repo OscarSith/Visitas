@@ -12,9 +12,4 @@
     		  $this.closest('.panel-body').append( template({label: 'Prueba ', options: options}) );
             }
     	});
-<<<<<<< HEAD
     }).find('.organigrama_cbo').change();
-	
-=======
-    }).find('.organigrama_cbo').change();
->>>>>>> cb7606098cb97e6e547fe85c0dca7d14b3ce624b

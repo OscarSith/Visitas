@@ -87,12 +87,8 @@ class PersonaController extends AppController
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['usuario_creador'] = 'Administrador';
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
-<<<<<<< HEAD
-			//$this->request->data['visita_horaprogramada'] = date('H:i:s');
-=======
 			$this->request->data['visita_horaprogramada'] = date('H:i:s');
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'];
->>>>>>> cb7606098cb97e6e547fe85c0dca7d14b3ce624b
 
 			if (empty($this->request->data['personal_id']) || $this->request->data['personal_id'] == '') {
 				$this->request->data['sede_id'] = 1;
@@ -104,16 +100,9 @@ class PersonaController extends AppController
 				$this->Personal->save($personal);
 				$this->request->data['personal_id'] = $personal->id;
 			}
-			// else {
-			// 	$personal = $this->Personal->find()->select(['id'])->where(['persona_id' => $this->request->data['persona_id']]);
-			// }
-			
 			$visita = $this->Visita->newEntity($this->request->data);
 
 			$this->Visita->save($visita);
-			//debug($visita);
-			//die();
-			
 			$this->request->data['visita_id'] = $visita->id;
 			$visitantes_id = $this->request->data['visitante_id'];
 			foreach ($visitantes_id as $key) {
