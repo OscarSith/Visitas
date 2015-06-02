@@ -69,6 +69,7 @@
             </ul>
           </div>
         </nav>
+<<<<<<< HEAD
       </header>
 
       <!-- =============================================== -->
@@ -138,6 +139,17 @@
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
           <b>Version</b> 2.0
+=======
+        <div id="page-wrapper">
+            <ol class="breadcrumb mb0">
+              <li><a href="#">Inicio</a></li>
+              <li class="active"><?= $title ?></li>
+            </ol>
+            <?php echo $this->Flash->render() ?>
+            <div class="container-fluid">
+                <?= $this->fetch('content') ?>
+            </div>
+>>>>>>> cb7606098cb97e6e547fe85c0dca7d14b3ce624b
         </div>
         <strong>Copyright &copy; 2014-2015 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
       </footer>
@@ -155,6 +167,7 @@
     <?= $this->Html->script('bootstrap-timepicker') ?>    
     <script src="/bower_components/handlebars/handlebars.min.js"></script>
     <?= $this->Html->script('registroVisita') ?>
+<<<<<<< HEAD
     <?= $this->Html->script('visita') ?>
     <?= $this->Html->script('visitavistante') ?>
         
@@ -173,4 +186,7 @@
     });
   </script>
   </body>
+=======
+</body>
+>>>>>>> cb7606098cb97e6e547fe85c0dca7d14b3ce624b
 </html>

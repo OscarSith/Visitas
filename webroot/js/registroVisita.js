@@ -65,8 +65,10 @@ function getData (id, obj) {
             $form.find('[name=cargo_id]').val(rec[view].cargo_id);
         } else {
             $form.find('[name=empresa_id]').val(rec.empresa.empresa_id);
-            $form.find('[name=ruc_numero]').val(rec.empresa.p.persona_nombres);
-            $form.find('[name=empresa_nombre]').val(rec.empresa.p.documento_numero);
+            if (rec.empresa.p) {
+                $form.find('[name=ruc_numero]').val(rec.empresa.p.persona_nombres);
+                $form.find('[name=empresa_nombre]').val(rec.empresa.p.documento_numero);
+            }
         }
     });
 }
@@ -142,5 +144,7 @@ $('#tblVisitantes').on('click', '.btn-danger', function() {
 }
 
 $('#modal-visitante').on('hide.bs.modal', function() {
-	$(this).find('[name=visitante_id]').val('');
+	var $this = $(this);
+    $this.find('[name=visitante_id]').val('');
+    $this.find('.btn-remove-text-autoc').click();
 });

@@ -1,6 +1,10 @@
 <div id="content-visita">
 	<h1 class="page-header"><?php echo $title ?></h1>
-	<?php echo $this->Flash->render() ?>
+	<?php if (!empty($this->Flash)): ?>
+		<div class="alert alert-warning">
+			<?php echo $this->Flash->render('error') ?>
+		</div>
+	<?php endif ?>
 	<div>
 	<?php echo $this->Form->create($persona, ['action' => 'registrarVisita', 'id' => 'frm-visita']) ?>
 		<div class="panel panel-default">
