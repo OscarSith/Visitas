@@ -22,45 +22,8 @@ class PersonaController extends AppController
 
 	public function index()
 	{
-		$this->loadModel('Lugar');
-		$this->loadModel('Motivo');
 		$this->loadModel('Visitante');
-		$this->loadModel('Tipodocumento');
-		$this->loadModel('Cargo');
-		$this->loadModel('Organigrama');
-
-		$lugares = $this->Lugar->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'lugar_nombre'
-		])
-		->where(['sede_id' => $this->request->session()->read('usuario.sede')]);
-		$lugares = $lugares->toArray();
-
-		$motivos = $this->Motivo->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'motivo_descripcion'
-		]);
-		$motivos = $motivos->toArray();
-
-		$documentos = $this->Tipodocumento->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'tipodocumento_nombre'
-		]);
-		$documentos = $documentos->toArray();
-
-		$cargos = $this->Cargo->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'cargo_nombre'
-		]);
-		$cargos = $cargos->toArray();
-
-		$organigramas = $this->Organigrama->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'organigrama_nombre'
-		])
-		->where(['id' => 1]);
-
-		$organigramas = $organigramas->toArray();
+		list($lugares, $motivos, $documentos, $cargos, $organigramas) = $this->getDefaultCombos();
 
 		$persona = $this->Persona->newEntity();
 
@@ -184,7 +147,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitante');
 		$visitas = $this->Visita->find()
-			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
+			->select(['id', 'vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
 			->innerJoin(
 				['vv' => 'Visitavisitante'],
 				['visita.id = vv.visita_id']

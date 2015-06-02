@@ -68,4 +68,48 @@ class AppController extends Controller
     {
         $this->Auth->allow(['registrar', 'add']);
     }
+
+    public function getDefaultCombos()
+    {
+        $this->loadModel('Lugar');
+        $this->loadModel('Motivo');
+        $this->loadModel('Tipodocumento');
+        $this->loadModel('Cargo');
+        $this->loadModel('Organigrama');
+
+        $lugares = $this->Lugar->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'lugar_nombre'
+        ])
+        ->where(['sede_id' => $this->request->session()->read('usuario.sede')]);
+        $lugares = $lugares->toArray();
+
+        $motivos = $this->Motivo->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'motivo_descripcion'
+        ]);
+        $motivos = $motivos->toArray();
+
+        $documentos = $this->Tipodocumento->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'tipodocumento_nombre'
+        ]);
+        $documentos = $documentos->toArray();
+
+        $cargos = $this->Cargo->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'cargo_nombre'
+        ]);
+        $cargos = $cargos->toArray();
+
+        $organigramas = $this->Organigrama->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'organigrama_nombre'
+        ])
+        ->where(['id' => 1]);
+
+        $organigramas = $organigramas->toArray();
+
+        return [$lugares, $motivos, $documentos, $cargos, $organigramas];
+    }
 }

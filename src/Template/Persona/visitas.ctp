@@ -21,7 +21,7 @@
 	<tbody>
 		<?php $n = 1;
 		foreach ($visitas as $key): ?>
-			<tr data-id="<?php echo $key->vv['id'] ?>">
+			<tr data-id="<?php echo $key->id ?>">
 				<td><?php echo $key->pr['persona_nombres']?></td>
 				<td><?php echo $key->pe['persona_nombres'] ?></td>
 				<td><?php echo $key->visita_fecha ?></td>
@@ -43,19 +43,19 @@
 					?>
 					<div class="btn btn-<?=$color?>"></div>
 				</td>
-				<td>					
-					<?php if ($key->vv['estado'] !='F'): ?>						
+				<td>
+					<?php if ($key->vv['estado'] !='F'): ?>
 					<div class="btn-group">
-					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span>
-					  </button>
+					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
 					  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+					  		<li><a href="/visita-edit/<?php echo $key->id ?>">Editar</a></li>
 					  	<?php if ($key->vv['estado'] =='R'): ?>
-					  		<li><a href="#modal-horaingreso" data-toggle="modal">Hora Inicio</a></li>	
+					  		<li><a href="#modal-horaingreso" data-toggle="modal">Hora Inicio</a></li>
 					  		<li><a href="#" class="anular" data-toggle="modal">Anular</a></li>
 					  	<?php elseif ($key->vv['estado'] =='D') : ?>
-					  		<li><a href="#modal-horasalida" data-toggle="modal">Hora Salida</a></li>	
+					  		<li><a href="#modal-horasalida" data-toggle="modal">Hora Salida</a></li>
 					  	<?php elseif ($key->vv['estado'] =='A') : ?>
-					  		<li><a href="#" class="activar" data-toggle="modal">Activar</a></li>	
+					  		<li><a href="#" class="activar" data-toggle="modal">Activar</a></li>
 					  	<?php endif ?>
 					  </ul>
 					</div>

@@ -70,10 +70,15 @@ Router::scope('/', function ($routes) {
                     ['controller' => 'persona', 'action' => 'getOrganigramaByPadre'],
                     ['pass' => ['id'] ]
         );
+    Router::connect('visita-edit/:id',
+                    ['controller' => 'visita', 'action' => 'show'],
+                    ['pass' => ['id'] ]
+        );
     Router::connect('persona/getVisitas',
                     ['controller' => 'persona', 'action' => 'getVisitas']
         );
     Router::url('empresa', ['controller' => 'empresa']);
+    Router::url('organigrama', ['controller' => 'organigrama']);
     Router::url('organigrama', ['controller' => 'organigrama']);
 });
 

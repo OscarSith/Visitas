@@ -6,12 +6,9 @@
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     
     <?= $this->Html->css('bootstrap.min.css') ?>
-    
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    
-    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />-->
     <?= $this->Html->css('main.css') ?>
-	  <?= $this->Html->css('dist/AdminLTE.min.css') ?>
+    <?= $this->Html->css('dist/AdminLTE.min.css') ?>
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
@@ -142,7 +139,6 @@
 	  <?= $this->Html->script('bootstrap.min') ?>
     <!-- AdminLTE App -->
 	  <?= $this->Html->script('dist/app.min') ?>
-    <?= $this->Html->script('bootbox') ?>
     <?= $this->Html->script('jquery.autocomplete.min') ?>
     <?= $this->Html->script('bootstrap-datepicker') ?>
     <?= $this->Html->script('bootstrap-datepicker.es') ?>
