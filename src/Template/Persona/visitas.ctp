@@ -1,10 +1,14 @@
 <h1 class="page-header">Listado de visitas</h1>
 <?php echo $this->Flash->render() ?>
-<ul class="pagination">
-	<?= $this->Paginator->prev('«') ?>
-	<?= $this->Paginator->numbers() ?>
-	<?= $this->Paginator->next('»') ?>
-</ul>
+<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Fecha de Visita</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" name="visita_fecha" id="Visitavisita_fecha" placeholder="dd-mm-yyyy" maxlength="10"/>
+						</div>
+					</div>
+				</div>
+
 <table class="table table-condensed table-hover">
 	<thead>
 		<tr>
@@ -66,7 +70,11 @@
 		endforeach ?>
 	</tbody>
 </table>
-
+<ul class="pagination">
+	<?= $this->Paginator->prev('«') ?>
+	<?= $this->Paginator->numbers() ?>
+	<?= $this->Paginator->next('»') ?>
+</ul>
 <div class="modal fade" id="modal-horaingreso">
   <div class="modal-dialog" style="z-index:2000">
     <div class="modal-content">

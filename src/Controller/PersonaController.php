@@ -360,7 +360,7 @@ class PersonaController extends AppController
 				
 				$this->Flash->success(__('Visitante registrado con éxito.'));
 			}
-			return $this->redirect(['action'=>'visitas']);
+			return $this->redirect($this->referer());
 		} 
 	}
 
@@ -380,8 +380,8 @@ class PersonaController extends AppController
 				
 				$this->Flash->success(__('Visitante registrado con éxito.'));
 			}
-			return $this->redirect(['action'=>'visitas']);
-		} 
+			return $this->redirect($this->referer());
+		}
 	}
 
 	public function getVisitas()
@@ -461,26 +461,19 @@ class PersonaController extends AppController
 				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
 				$this->autoRender = false;				
 			}			
-
-			echo $data;	
-
+			echo $data;
 		}else {
 			throw new BadRequestException();
-		}
-
-		
+		}		
 	}
 
 	public function activarvisita()
-	{		
-		
+	{				
 		if ($this->request->is('ajax')) {
-
 			$this->loadComponent('RequestHandler');
 			$this->loadModel('Visitavisitante');
 			$data;
 			if (!empty($this->request->data['id'])) {
-
 				$visitante = $this->Visitavisitante->query()
 								->update()
 								->set(['estado'=>'R'])
@@ -499,8 +492,24 @@ class PersonaController extends AppController
 
 		}else {
 			throw new BadRequestException();
-		}
+		}	
+	}
 
-		
+	public function probandoconsulta($id=null,$query=null){
+		$this->loadModel('Empresa');
+		$data = $this->Empresa->find()
+			->select(['data' => 'empresa.id', 'value' => 'p.persona_nombres'])
+			->innerJoin(
+				['p' => 'persona'],
+				['empresa.persona_id = p.id']
+			);
+			if ( $query != null ) {
+				$data=$data->where(['p.documento_numero LIKE ' => '%'.$query.'%']);
+			}
+			if( $id != null ){
+				$data=$data->where(['id' => $id]);
+			}
+			debug($data);
+			die();
 	}
 }

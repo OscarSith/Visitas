@@ -137,7 +137,7 @@
 				<h3 class="panel-title">Visitantes</h3>
 			</div>
 			<div class="panel-body">
-				<input type="button" value="Agregar Visitante" class="btn btn-default" data-toggle="modal" data-target="#modal-visitante">
+				<input type="button" value="Agregar Visitante" class="btn btn-default ativa-scroll" data-toggle="modal" data-target="#modal-visitante">
 				<hr>
 				<table class="table table-condensed">
 					<thead>
@@ -166,10 +166,10 @@
 	<div class="modal fade" id="modal-visitante">
 	  <div class="modal-dialog" style="z-index:2000">
 	    <div class="modal-content">
-	      <div class="modal-header">
+	    	<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">Registra Visitante</h4>
-		</div>
+				<h4 class="modal-title">Registra Visitante</h4>
+			</div>
 		<div class="modal-body">
 			<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
 			<input type="hidden" name="visitante_id" value="">
@@ -256,12 +256,15 @@
 				</div>
 			</div>
 			<hr>
+		</div>
+		<div class="modal-footer">			
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 				<button class="btn btn-primary">Guardar</button>
 			</div>
+		</div>	
 			<?php echo $this->Form->end() ?>
-	      </div>
+	      
 	    </div>
 	  </div>
 	</div>
