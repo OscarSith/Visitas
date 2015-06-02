@@ -23,10 +23,4 @@ class Usuario extends Entity
     {
         return (new DefaultPasswordHasher)->hash($password);
     }
-
-	// public function beforeSaved()
-	// {
-	// 	$this->hashPasswords(null, true);
-	// 	return true;
-	// }
 }

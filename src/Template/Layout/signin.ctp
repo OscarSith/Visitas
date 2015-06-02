@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="">
-    <meta name="author" content="Oscar Larriega <larriega@gmail.com>">
+    <meta name="author" content="">
     <title>Admin</title>
     <?= $this->Html->css('admin.min.css') ?>
 </head>

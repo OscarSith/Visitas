@@ -16,6 +16,16 @@
 						</div>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<div class="row">
+						<label for="" class="control-label col-sm-2">Hora de Visita</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" name="visita_horaprogramada" id="Visita_horaprogramada" placeholder="yyyy-mm-dd" maxlength="10"/>
+						</div>
+					</div>
+				</div>
+
 				<div class="form-group">
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Lugar de reunión</label>

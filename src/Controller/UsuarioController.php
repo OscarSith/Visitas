@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use Cake\Auth\DefaultPasswordHasher;
 use Cake\Event\Event;
 
 class UsuarioController extends AppController
@@ -9,9 +8,6 @@ class UsuarioController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		// Allow users to register and logout.
-		// You should not add the "login" action to allow list. Doing so would
-		// cause problems with normal functioning of AuthComponent.
 		$this->Auth->allow(['logout']);
 	}
 
@@ -64,7 +60,7 @@ class UsuarioController extends AppController
 			$persona = $this->Persona->newEntity();
 			$personal = $this->Personal->newEntity();
 
-			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat'];
+			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
 			$persona = $this->Persona->patchEntity($persona, $this->request->data);
 			
 			//debug($this->request->data);
@@ -83,8 +79,9 @@ class UsuarioController extends AppController
 			}
 			$this->request->data['tipo_usuario'] = 'E';
 			$this->request->data['personal_id'] = $personal->id;
-			$hasher = new DefaultPasswordHasher();
-			$this->request->data['usuario_clave'] = $hasher->hash($this->request->data['usuario_clave']);
+
+			//$hasher = new DefaultPasswordHasher();
+			//$this->request->data['usuario_clave'] = $hasher->hash($this->request->data['usuario_clave']);
 			$usuario = $this->Usuario->newEntity($this->request->data);
 			if(!$this->Usuario->save($usuario)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));

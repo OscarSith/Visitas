@@ -1,9 +1,13 @@
-
-$( "#Visitavisita_fecha" ).datepicker({
+$("#Visitavisita_fecha").datepicker({
         format: "dd/mm/yyyy",
         autoclose: true,
-        language: "es",
-        yearRange: "1930:1996"
+        language: "es"
+});
+
+$('#Visita_horaprogramada').timepicker({
+    minuteStep: 30,
+    showInputs: true,
+    disableFocus: true
 });
 
 function agregarVisitanteTable (values) {
@@ -100,8 +104,9 @@ $('#tblVisitantes').on('click', '.btn-danger', function() {
         });
     }
 });
-var $search = $('#search_persona_visitante');
-if ($search.length) {
+
+    var $search = $('#search_persona_visitante');
+    if ($search.length) {
     var options = {
         serviceUrl: '/persona/searchByDni',
         minChars: 3,
@@ -120,10 +125,12 @@ if ($search.length) {
 
     var dniOptions = $.extend(true, {}, options);
     dniOptions.serviceUrl = '/persona/search';
+
     $('#search_persona_visita').autocomplete(dniOptions);
 
     var rucOptions = $.extend(true, {}, options);
     rucOptions.serviceUrl = '/persona/showByRuc';
+    
     $('#ruc_numero').autocomplete(rucOptions);
 
 	$('#content-visita').on('click', '.btn-remove-text-autoc', function() {

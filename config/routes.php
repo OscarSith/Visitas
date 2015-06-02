@@ -74,11 +74,12 @@ Router::scope('/', function ($routes) {
 
     Router::url('persona', ['controller' => 'persona']);
     Router::connect('persona/getOrganigramaByPadre/:id',
-        ['controller' => 'persona', 'action' => 'getOrganigramaByPadre'],
-        [
-        // order matters since this will simply map ":id" to $articleId in your action
-        'pass' => ['id']
-    ]);
+                    ['controller' => 'persona', 'action' => 'getOrganigramaByPadre'],
+                    ['pass' => ['id'] ]
+        );
+    Router::connect('persona/getVisitas',
+                    ['controller' => 'persona', 'action' => 'getVisitas']
+        );
     Router::url('empresa', ['controller' => 'empresa']);
     Router::url('organigrama', ['controller' => 'organigrama']);
 });

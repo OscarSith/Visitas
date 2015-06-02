@@ -76,6 +76,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitavisitante');
 
+
 		if ($this->request->is('post')) {
 
 			if (empty($this->request->data['visitante_id'])) {
@@ -86,7 +87,7 @@ class PersonaController extends AppController
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['usuario_creador'] = 'Administrador';
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
-			$this->request->data['visita_horaprogramada'] = date('H:i:s');
+			//$this->request->data['visita_horaprogramada'] = date('H:i:s');
 
 			if (empty($this->request->data['personal_id'])) {
 				$persona = $this->Persona->newEntity($this->request->data);
@@ -100,10 +101,13 @@ class PersonaController extends AppController
 			// 	$personal = $this->Personal->find()->select(['id'])->where(['persona_id' => $this->request->data['persona_id']]);
 			// $this->request->data['personal_id'] = $personal->id;
 			// }
-
+			
 			$visita = $this->Visita->newEntity($this->request->data);
-			$this->Visita->save($visita);
 
+			$this->Visita->save($visita);
+			//debug($visita);
+			//die();
+			
 			$this->request->data['visita_id'] = $visita->id;
 			$visitantes_id = $this->request->data['visitante_id'];
 			foreach ($visitantes_id as $key) {
@@ -178,7 +182,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitante');
 		$visitas = $this->Visita->find()
-			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','estado'])
+			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
 			->innerJoin(
 				['vv' => 'Visitavisitante'],
 				['visita.id = vv.visita_id']
@@ -210,24 +214,6 @@ class PersonaController extends AppController
 		$this->set(compact('visitas', 'authUser', 'title','visitavisitante'));
 	}
 
-	public function registrarHoraInreso()
-	{
-		if ($this->request->is('post')) {
-			$this->loadModel('Visitavisitante');
-			$this->loadModel('Visita');			
-			if (!empty($this->request->data['id'])) {
-				$visitante = $this->Visitavisitante->query()
-								->update()
-								->set(['visita_horaingeso' => $this->request->data['visita_horaingreso']])
-								->set(['estado'=>'D'])								
-								->where(['id' => $this->request->data['id']])
-								->execute();
-					$this->Flash->success(__('Visitante registrado con éxito.'));
-			}
-			return $this->redirect(['action'=>'visitas']);
-		} 
-	}
-
 	public function search()
 	{
 		$data = $this->Persona
@@ -240,7 +226,7 @@ class PersonaController extends AppController
 						'conditions' => 'persona.id = p.persona_id'
 					]
 				])
-				->where(['persona_nombres LIKE' => '%'. $this->request->query['query'] .'%']);
+				->where(['upper(persona_nombres) LIKE' => '%'. strtoupper($this->request->query['query']) .'%']);
 
 		$this->toJson($data, true);
 	}
@@ -353,5 +339,166 @@ class PersonaController extends AppController
 		$data = $this->Organigrama->find()->where(['padre_id' => $id]);
 		$this->autoRender = false;
 		echo json_encode($data);
+	}
+
+
+	public function registrarHoraInreso()
+	{
+		if ($this->request->is('post')) {
+			$this->loadModel('Visitavisitante');
+
+			if (!empty($this->request->data['id'])) {
+				
+				$visitante = $this->Visitavisitante->query()
+								->update()
+								->set(['visita_horaingreso' => $this->request->data['visita_horaingreso']])
+								->set(['estado'=>'D'])								
+								->where(['id' => $this->request->data['id']])
+								->execute();
+				
+				$this->Flash->success(__('Visitante registrado con éxito.'));
+			}
+			return $this->redirect(['action'=>'visitas']);
+		} 
+	}
+
+	public function registrarHoraSalida()
+	{
+		if ($this->request->is('post')) {
+			$this->loadModel('Visitavisitante');
+
+			if (!empty($this->request->data['id'])) {
+				
+				$visitante = $this->Visitavisitante->query()
+								->update()
+								->set(['visita_horasalida' => $this->request->data['visita_horasalida']])
+								->set(['estado'=>'F'])
+								->where(['id' => $this->request->data['id']])
+								->execute();
+				
+				$this->Flash->success(__('Visitante registrado con éxito.'));
+			}
+			return $this->redirect(['action'=>'visitas']);
+		} 
+	}
+
+	public function getVisitas()
+	{
+		
+		$this->loadModel('Personal');
+		$this->loadModel('Visitavisitante');
+		$this->loadModel('Visita');
+		$this->loadModel('Visitante');
+
+		$visitas = $this->Visita->find()
+			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
+			->innerJoin(
+				['vv' => 'Visitavisitante'],
+				['visita.id = vv.visita_id']
+			)
+			->innerJoin(
+				['vi' => 'Visitante'],
+				['vv.visitante_id = vi.id']
+			)
+			->innerJoin(
+				['pe' => 'Persona'],
+				['vi.persona_id = pe.id']
+			)
+			->innerJoin(
+				['pl' => 'Personal'],
+				['visita.personal_id = pl.id']
+			)
+			->innerJoin(
+				['pr' => 'Persona'],
+				['pl.persona_id = pr.id']
+			);
+
+		$this->autoRender = false;
+		$a = array();
+		
+		foreach ($visitas as $key){
+
+			list($dia, $mes, $anio) = split('[/.-]', $key->visita_fecha);
+
+			array_push( $a, array('title'=> 'Visita para '.$key->pr['persona_nombres'].' de '.$key->pe['persona_nombres'],
+								  'start'=> $anio.'-'.$mes.'-'.$dia
+								));
+		}
+		$this->request->accepts('application/json');
+		echo json_encode($a);
+	}
+
+	public function verCalendario()
+	{
+		$title = 'Calendario de Visitas';
+		$authUser = $this->Auth->user('usuario_login');
+
+		$this->set(compact('title', 'authUser'));
+	}
+
+	public function anularvisita()
+	{		
+		
+		if ($this->request->is('ajax')) {
+
+			$this->loadComponent('RequestHandler');
+			$this->loadModel('Visitavisitante');
+			$data;
+			if (!empty($this->request->data['id'])) {
+
+				$visitante = $this->Visitavisitante->query()
+								->update()
+								->set(['estado'=>'A'])
+								->where(['id' => $this->request->data['id']])
+								->execute();
+				
+				$data = json_encode(['mensaje' => 'Se anuló la visita.']);	
+				$this->autoRender = false;				
+			}else{
+				
+				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
+				$this->autoRender = false;				
+			}			
+
+			echo $data;	
+
+		}else {
+			throw new BadRequestException();
+		}
+
+		
+	}
+
+	public function activarvisita()
+	{		
+		
+		if ($this->request->is('ajax')) {
+
+			$this->loadComponent('RequestHandler');
+			$this->loadModel('Visitavisitante');
+			$data;
+			if (!empty($this->request->data['id'])) {
+
+				$visitante = $this->Visitavisitante->query()
+								->update()
+								->set(['estado'=>'R'])
+								->where(['id' => $this->request->data['id']])
+								->execute();
+				
+				$data = json_encode(['mensaje' => 'Se activó la visita.']);	
+				$this->autoRender = false;				
+			}else{
+				
+				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
+				$this->autoRender = false;				
+			}			
+
+			echo $data;	
+
+		}else {
+			throw new BadRequestException();
+		}
+
+		
 	}
 }
