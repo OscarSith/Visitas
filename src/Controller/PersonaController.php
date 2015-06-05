@@ -6,8 +6,8 @@ use Cake\Event\Event;
 class PersonaController extends AppController
 {
 	public $paginate = [
-        'limit' => 5
-    ];
+		'limit' => 5
+	];
 
     public function initialize()
     {
@@ -83,7 +83,6 @@ class PersonaController extends AppController
 
 	public function registrarVisitante()
 	{
-
 		if ($this->request->is('ajax')) {
 			
 			$this->loadComponent('RequestHandler');
@@ -166,8 +165,7 @@ class PersonaController extends AppController
 	}
 
 	public function visitas()
-	{			
-		
+	{
 		$this->loadModel('Personal');
 		$this->loadModel('Visitavisitante');
 		$this->loadModel('Visita');
@@ -193,9 +191,8 @@ class PersonaController extends AppController
 			->innerJoin(
 				['pr' => 'Persona'],
 				['pl.persona_id = pr.id']
-			)
-			;
-		
+			);
+
 		if (!empty($this->request->data['visita_fecha']) && !empty($this->request->data['visita_fechaF'])) {
 			
 			$visitas=$visitas->where(function ($exp, $q) {
@@ -212,7 +209,7 @@ class PersonaController extends AppController
 			$this->request->data['visita_personal']="";
 		}
 
-		$this->set('visitas', $this->paginate($visitas));	
+		$this->set('visitas', $this->paginate($visitas));
 		
 		$authUser = $this->Auth->user('usuario_login');
 		$visitas = $this->paginate($visitas);

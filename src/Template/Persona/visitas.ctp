@@ -105,8 +105,8 @@
 			<?= $this->Paginator->prev('«') ?>
 			<?= $this->Paginator->numbers() ?>
 			<?= $this->Paginator->next('»') ?>
-		</ul>		
-	</div>	
+		</ul>
+	</div>
 </div>
 
 <div class="modal fade" id="modal-horaingreso">

@@ -6,14 +6,13 @@
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     
     <?= $this->Html->css('bootstrap.min.css') ?>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <?= $this->Html->css('../bower_components/fontawesome/css/font-awesome.min.css') ?>
     <?= $this->Html->css('main.css') ?>
     <?= $this->Html->css('dist/AdminLTE.css') ?>
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
-    <?= $this->Html->css('fullcalendar.css') ?>
-    <?= $this->Html->css('fullcalendar.print.css') ?>
+    <?= $this->Html->css(['fullcalendar.css', 'fullcalendar.print.css']) ?>
   </head>
   <body class="skin-red sidebar-mini">
     <div class="wrapper">
@@ -80,21 +79,34 @@
           <ul class="sidebar-menu">
             <li class="header">OPCIONES</li>
             <li class="treeview <?= ($title=='Registro de Visitas' || $title=='Listado de visitas')?"active":""  ?>">
-              <a href="#">
-                <i class="fa fa-dashboard"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li <?= ($title=='Registro de Visitas')?"class='active'":"" ?>>
-                  <a href="/persona"><i class="fa fa-fw fa-dashboard"></i> Registrar Visita</a>
-                </li>
-                <li <?= ($title=='Listado de visitas')?"class='active'":"" ?>>
-                  <a href="/persona/visitas"><i class="fa fa-fw fa-icon-desktop"></i> Visitas</a>
-                </li>
-              </ul>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li <?= ($title=='Registro de Visitas')?"class='active'":"" ?>>
+                        <a href="/persona"><i class="fa fa-fw fa-dashboard"></i> Registrar Visita</a>
+                    </li>
+                    <li <?= ($title=='Listado de visitas')?"class='active'":"" ?>>
+                        <a href="/persona/visitas"><i class="fa fa-fw fa-icon-desktop"></i> Visitas</a>
+                    </li>
+                </ul>
             </li>
-                         
-            <li <?= ($title=='Calendario de Visitas')?"class='active'":""  ?>><a href="/persona/vercalendario"><i class="fa fa-book"></i> <span>Agenda</span></a></li>
-            
+            <li <?= ($title=='Calendario de Visitas')?"class='active'":""  ?>>
+                <a href="/persona/vercalendario"><i class="fa fa-book"></i> <span>Agenda</span></a>
+            </li>
+            <li class="treeview <?= ($title=='Registro de Visitas' || $title=='Listado de visitas')?"active":""  ?>">
+                <a href="#">
+                    <i class="fa fa-group fa-fw"></i> <span>Usuario</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li <?= ($title=='Usuarios')?"class='active'":"" ?>>
+                        <a href="/usuario"><i class="fa fa-list fa-fw"></i> Listado</a>
+                    </li>
+                    <li <?= ($title=='Registro')?"class='active'":"" ?>>
+                        <a href="/usuario/registrar"><i class="fa fa-fw fa-plus"></i> Nuevo</a>
+                    </li>
+                </ul>
+            </li>
           </ul>
         </section>
         <!-- /.sidebar -->

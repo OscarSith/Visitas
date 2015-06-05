@@ -11,16 +11,6 @@ class Usuario extends Entity
 		'usuario_login' => true,
 		'usuario_clave' => true,
 		'tipo_usuario' => true,
+		'usuario_creador' => true,
 	];
-
-	public function _setUsuarioClave($value)
-	{
-		$hasher = new DefaultPasswordHasher();
-		return $hasher->hash($value);
-	}
-
-	protected function _setPassword($password)
-    {
-        return (new DefaultPasswordHasher)->hash($password);
-    }
 }

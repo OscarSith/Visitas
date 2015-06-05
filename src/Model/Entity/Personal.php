@@ -6,8 +6,9 @@ class Personal extends Entity
 {
 	protected $_accessible = [
 		'persona_id' => true,
-		'cargo_id' => true,		
+		'cargo_id' => true,
 		'sede_id' => true,
 		'organigrama_id' => true,
+		'usuario_creador' => true
 	];
 }

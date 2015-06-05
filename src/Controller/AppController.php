@@ -64,11 +64,6 @@ class AppController extends Controller
         ]);
     }
 
-    public function beforeFilter(Event $event)
-    {
-        $this->Auth->allow(['registrar', 'add']);
-    }
-
     public function getDefaultCombos()
     {
         $this->loadModel('Lugar');
@@ -82,25 +77,21 @@ class AppController extends Controller
             'valueField' => 'lugar_nombre'
         ])
         ->where(['sede_id' => $this->request->session()->read('usuario.sede')]);
-        $lugares = $lugares->toArray();
 
         $motivos = $this->Motivo->find('list',  [
             'keyField' => 'id',
             'valueField' => 'motivo_descripcion'
         ]);
-        $motivos = $motivos->toArray();
 
         $documentos = $this->Tipodocumento->find('list',  [
             'keyField' => 'id',
             'valueField' => 'tipodocumento_nombre'
         ]);
-        $documentos = $documentos->toArray();
 
         $cargos = $this->Cargo->find('list',  [
             'keyField' => 'id',
             'valueField' => 'cargo_nombre'
         ]);
-        $cargos = $cargos->toArray();
 
         $organigramas = $this->Organigrama->find('list',  [
             'keyField' => 'id',
@@ -108,8 +99,36 @@ class AppController extends Controller
         ])
         ->where(['id' => 1]);
 
-        $organigramas = $organigramas->toArray();
-
         return [$lugares, $motivos, $documentos, $cargos, $organigramas];
+    }
+
+    public function getDefaultCombosUsuario()
+    {
+        $this->loadModel('Tipodocumento');
+        $this->loadModel('Cargo');
+        $this->loadModel('Sede');
+        $this->loadModel('Organigrama');
+
+        $documentos = $this->Tipodocumento->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'tipodocumento_nombre'
+        ]);
+
+        $cargos = $this->Cargo->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'cargo_nombre'
+        ]);
+
+        $sedes = $this->Sede->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'sede_nombre'
+        ]);
+
+        $organigramas = $this->Organigrama->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'organigrama_nombre'
+        ]);
+
+        return [$documentos, $cargos, $sedes, $organigramas];
     }
 }

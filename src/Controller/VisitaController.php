@@ -53,7 +53,6 @@ class VisitaController extends AppController
 
 	public function guardarVisita()
 	{
-		
 		$this->loadModel('Visitavisitante');
 
 		$this->request->data['visita_id']= $this->request->data['id'];
@@ -61,30 +60,27 @@ class VisitaController extends AppController
 		
 		foreach ($visitantes_id as $key) {
 			list($vvisitante, $visitante) = explode('|', $key);
-			
+
 			if($vvisitante==0){
 				$this->request->data['visitante_id'] = $visitante;
 				$visitavisitante = $this->Visitavisitante->newEntity($this->request->data);
 				
 				$this->Visitavisitante->save($visitavisitante);
 			}
-			
-		}	
+
+		}
 
 		$rpta = $this->Visita->query()->update()
 			->set(['visita_fecha' => $this->request->data['visita_fecha']])
 			->set(['visita_horaprogramada' => $this->request->data['visita_horaprogramada']])
 			->set(['lugar_id' => $this->request->data['lugar_id']])
-			->set(['motivo_id' => $this->request->data['motivo_id']])			
+			->set(['motivo_id' => $this->request->data['motivo_id']])
 			->set(['personal_id' => $this->request->data['personal_id']])
 			->set(['organigrama_id' => $this->request->data['hdnorganigrama_id']])
 			->set(['visita_date' => $this->request->data['visita_fecha']])
 			->where(['id' => $this->request->data['id']])
 			->execute();
 
-		
-		//debug($rpta->count());
-		//die();
 		$this->Flash->success(__('Visita Actualizado'));
 		$this->redirect($this->referer());
 	}

@@ -3,13 +3,44 @@ namespace App\Controller;
 
 use Cake\Event\Event;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\Routing\Router;
 
 class UsuarioController extends AppController
 {
+	public $paginate = [
+		'limit' => 5
+	];
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->loadComponent('Paginator');
+    }
+
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
 		$this->Auth->allow(['logout']);
+	}
+
+	public function index()
+	{
+		$title = 'Usuarios';
+		$authUser = $this->Auth->user('usuario_login');
+		$usuarios = $this->Usuario->find()
+					->select(['id', 'usuario_creador', 'usuario_login', 'p.persona_nombres', 'p.documento_numero', 'estado', 'tipo_usuario'])
+					->join([
+						'table' => 'Personal',
+						'alias' => 'pl',
+						'type' => 'inner',
+						'conditions' => 'pl.id = usuario.personal_id'
+					])
+					->innerJoin(
+						['p' => 'Persona'], ['p.id = pl.persona_id']
+					);
+		$usuarios = $this->paginate($usuarios);
+
+		$this->set(compact('usuarios', 'title', 'authUser'));
 	}
 
 	public function login()
@@ -56,23 +87,15 @@ class UsuarioController extends AppController
 
 	public function add()
 	{
-		
 		$this->loadModel('Persona');
 		$this->loadModel('Personal');
 
 		if ($this->request->is('post')) {
 			$this->request->data['perfil_id'] = 1;
-			$this->request->data['fecha_creacion'] = date('Y-m-d H:i:s');
-			$this->request->data['usuario_creador'] = 'admin';
+			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
 			$this->request->data['usuario_clave']=(new DefaultPasswordHasher)->hash($this->request->data['usuario_clave']);
-			$usuario = $this->Usuario->newEntity($this->request->data);
-			
-			$hasher = new DefaultPasswordHasher();
 
-			debug($usuario->usuario_clave);
-			die();
 			$persona = $this->Persona->newEntity();
-			$personal = $this->Personal->newEntity();
 
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
 			$persona = $this->Persona->patchEntity($persona, $this->request->data);
@@ -81,62 +104,111 @@ class UsuarioController extends AppController
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
 
+			$personal = $this->Personal->newEntity();
 			$this->request->data['persona_id'] = $persona->id;
 			$personal = $this->Personal->patchEntity($personal, $this->request->data);
 
-			
 			if(!$this->Personal->save($personal)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
+
 			$this->request->data['tipo_usuario'] = 'E';
 			$this->request->data['personal_id'] = $personal->id;
-			
 
+			$usuario = $this->Usuario->newEntity($this->request->data);
 			if(!$this->Usuario->save($usuario)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
 
 			$this->Flash->success(__('Usuario agregado con exito.'));
-            return $this->redirect(['action' => 'login']);
+            return $this->redirect(['action' => 'index']);
 		}
 		return $this->redirect(['action' => 'registrar']);
 	}
 
 	public function registrar()
 	{
-		$this->layout = 'signin';
-
 		$usuario = $this->Usuario->newEntity();
-		$this->loadModel('Tipodocumento');
-		$this->loadModel('Cargo');
-		$this->loadModel('Sede');
-		$this->loadModel('Organigrama');
+		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
 
-		$documentos = $this->Tipodocumento->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'tipodocumento_nombre'
-		]);
+		$title = 'Nuevo Usuario';
+		$authUser = $this->Auth->user('usuario_login');
+		$route = Router::getRequest()->params['action'];
 
-		$cargos = $this->Cargo->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'cargo_nombre'
-		]);
+		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'title', 'authUser', 'route'));
+	}
 
-		$sedes = $this->Sede->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'sede_nombre'
-		]);
+	public function edit($id)
+	{
+		$usuario = $this->Usuario->find()
+					->select(['id', 'usuario_login', 'personal_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero', 'p.tipodocumento_id', 'pl.cargo_id', 'pl.sede_id', 'pl.organigrama_id'])
+					->join([
+						'table' => 'Personal',
+						'alias' => 'pl',
+						'type' => 'inner',
+						'conditions' => 'pl.id = usuario.personal_id'
+					])
+					->innerJoin(
+						['p' => 'Persona'], ['p.id = pl.persona_id']
+					)
+					->where(['usuario.id' => $id])
+					->first();
 
-		$organigramas = $this->Organigrama->find('list',  [
-			'keyField' => 'id',
-			'valueField' => 'organigrama_nombre'
-		]);
+		// Para llenar el form usando solo la entidad
+		$usuario->set('persona_nombre', $usuario->p['persona_nombre']);
+		$usuario->set('persona_apepat', $usuario->p['persona_apepat']);
+		$usuario->set('persona_apemat', $usuario->p['persona_apemat']);
+		$usuario->set('documento_numero', $usuario->p['documento_numero']);
+		$usuario->set('tipodocumento_id', $usuario->p['tipodocumento_id']);
+		$usuario->set('cargo_id', $usuario->pl['cargo_id']);
+		$usuario->set('sede_id', $usuario->pl['sede_id']);
+		$usuario->set('organigrama_id', $usuario->pl['organigrama_id']);
 
-		$cargos = $cargos->toArray();
-		$sedes 	= $sedes->toArray();
-		$organigramas = $organigramas->toArray();
+		$title = 'Editar Usuario';
+		$authUser = $this->Auth->user('usuario_login');
+		$route = Router::getRequest()->params['action'];
 
-		$this->set(compact('usuario', 'documentos', 'cargos','sedes','organigramas'));
+		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
+
+		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'usuario', 'title', 'authUser', 'route'));
+	}
+
+	public function update($id)
+	{
+		$this->request->data['usuario_actualiza'] = $this->Auth->user('usuario_login');
+
+		$this->loadModel('Personal');
+		$this->loadModel('Persona');
+		// Obtengo el id de personal y la persona_id
+		$personalData = $this->Personal->find()->select(['id', 'persona_id'])->where(['id' => $this->request->data['personal_id']])->first();
+
+		// Actualiza Tabla Usuario
+		$this->Usuario->query()->update()
+			->set(['usuario_login' => $this->request->data['usuario_login']])
+			->where(['id' => $id])
+			->execute();
+
+		// Actualiza tabla personal
+		$this->Personal->query()->update()
+			->set(['cargo_id' => $this->request->data['cargo_id']])
+			->set(['sede_id' => $this->request->data['sede_id']])
+			->set(['organigrama_id' => $this->request->data['organigrama_id']])
+			->set(['usuario_actualiza' => $this->request->data['usuario_actualiza']])
+			->where(['id' => $personalData->id])
+			->execute();
+
+		// Actualiza tabla persona
+		$this->Persona->query()->update()
+			->set(['persona_nombre' => $this->request->data['persona_nombre']])
+			->set(['persona_apepat' => $this->request->data['persona_apepat']])
+			->set(['persona_apemat' => $this->request->data['persona_apemat']])
+			->set(['tipodocumento_id' => $this->request->data['tipodocumento_id']])
+			->set(['documento_numero' => $this->request->data['documento_numero']])
+			->set(['usuario_actualiza' => $this->request->data['usuario_actualiza']])
+			->where(['id' => $personalData->persona_id]);
+
+		$this->Flash->success('Usuario Editado exitosamente.');
+		return $this->redirect(['action' => 'index']);
 	}
 
 	public function logout()
