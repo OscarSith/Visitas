@@ -6,24 +6,21 @@
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     
     <?= $this->Html->css('bootstrap.min.css') ?>
-    <!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <?= $this->Html->css('main.css') ?>
-    <?= $this->Html->css('dist/AdminLTE.min.css') ?>
+    <?= $this->Html->css('dist/AdminLTE.css') ?>
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
     <?= $this->Html->css('fullcalendar.css') ?>
     <?= $this->Html->css('fullcalendar.print.css') ?>
   </head>
-  <body class="skin-blue sidebar-mini">
+  <body class="skin-red sidebar-mini">
     <div class="wrapper">
       <header class="main-header">
         <!-- Logo -->
-        <a href="../../index2.html" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b>A</b>LT</span>
-          <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>Admin</b>LTE</span>
+        <a href="#" class="logo">
+          <?php echo $this->Html->image('onagi.png', ['alt' => 'CakePHP']);?>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top" role="navigation">
@@ -39,16 +36,26 @@
               
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="../../dist/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
+                  <?php echo $this->Html->image('/js/dist/img/user2-160x160.jpg', ['alt' => 'Usuario','class'=>'user-image']);?>
                   <span class="hidden-xs"><?php echo $authUser ?></span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="../../dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+                    <?php echo $this->Html->image('/js/dist/img/user2-160x160.jpg', ['alt' => 'Usuario']);?>
                     <p>
                       <?php echo $authUser ?>
-                      <small><?php getdate()?></small>
+                      <small><?php $fecha=getdate(); echo $fecha['mday'].'/'.$fecha['mon'].'/'.$fecha['year'].'<br>'; ?>
+                        <?php 
+                          if( $this->request->session()->read('usuario.perfil')==1 ){
+                            echo "Administrador";
+                          }else if($this->request->session()->read('usuario.perfil')==2){
+                            echo "Seguridad";
+                          }else{
+                            echo "Otro";
+                          }
+                        ?> 
+                      </small>
                     </p>
                   </li>
                   
@@ -72,21 +79,21 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">OPCIONES</li>
-            <li class="treeview">
+            <li class="treeview <?= ($title=='Registro de Visitas' || $title=='Listado de visitas')?"active":""  ?>">
               <a href="#">
                 <i class="fa fa-dashboard"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li>
+                <li <?= ($title=='Registro de Visitas')?"class='active'":"" ?>>
                   <a href="/persona"><i class="fa fa-fw fa-dashboard"></i> Registrar Visita</a>
                 </li>
-                <li>
+                <li <?= ($title=='Listado de visitas')?"class='active'":"" ?>>
                   <a href="/persona/visitas"><i class="fa fa-fw fa-icon-desktop"></i> Visitas</a>
                 </li>
               </ul>
             </li>
-                        
-            <li><a href="/persona/vercalendario"><i class="fa fa-book"></i> <span>Agenda</span></a></li>
+                         
+            <li <?= ($title=='Calendario de Visitas')?"class='active'":""  ?>><a href="/persona/vercalendario"><i class="fa fa-book"></i> <span>Agenda</span></a></li>
             
           </ul>
         </section>
@@ -107,9 +114,7 @@
 
         <!-- Main content -->
         <section class="content">
-
-          <!-- Default box -->
-          
+          <!-- Default box -->          
             <div class="box">
             
             <div class="box-body">
@@ -118,9 +123,7 @@
                   <?= $this->fetch('content') ?>
               </div>
             </div><!-- /.box-body -->
-            <div class="box-footer">
-              Footer
-            </div><!-- /.box-footer-->
+            
           </div><!-- /.box -->
 
         </section><!-- /.content -->
@@ -128,15 +131,16 @@
 
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 2.0
+          <b>Version</b> 1.0
         </div>
-        <strong>Copyright &copy; 2014-2015 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2015 <a class="red" href="http://onagi.gob.pe">ONAGI - Oficina Nacional de Gobierno Interior</a>.</strong> Todos los derechos reservados.
       </footer>
       
       
     <?= $this->Html->script('jquery-2.1.1.min') ?>
     <!-- Bootstrap 3.3.2 JS -->
 	  <?= $this->Html->script('bootstrap.min') ?>
+    <?= $this->Html->script('bootbox') ?>
     <!-- AdminLTE App -->
 	  <?= $this->Html->script('dist/app.min') ?>
     <?= $this->Html->script('jquery.autocomplete.min') ?>

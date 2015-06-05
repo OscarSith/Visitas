@@ -17,6 +17,15 @@
 						</div>
 					</div>
 				</div>
+				<div class="form-group">
+                    <label>Color picker with addon:</label>
+                    <div class="input-group my-colorpicker2 colorpicker-element">
+                      <input type="text" class="form-control">
+                      <div class="input-group-addon">
+                        <i style="background-color: rgb(132, 92, 92);"></i>
+                      </div>
+                    </div>
+                  </div>
 			</div>
 		</div>
 		

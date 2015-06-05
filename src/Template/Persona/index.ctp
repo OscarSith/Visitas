@@ -34,7 +34,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Lugar de reunión</label>
 						<div class="col-sm-4">
-			        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control']) ?>
+			        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control', 'empty' => 'Seleccione']) ?>
 						</div>
 					</div>
 		        </div>
@@ -42,7 +42,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Motivo de reunión</label>
 						<div class="col-sm-4">
-			        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control']) ?>
+			        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control','empty' => 'Seleccione']) ?>
 						</div>
 					</div>
 		        </div>
@@ -173,6 +173,7 @@
 		<div class="modal-body">
 			<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
 			<input type="hidden" name="visitante_id" value="">
+			<input type="hidden" name="persona_id" value="">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title"></h4>Información Básica
@@ -234,6 +235,7 @@
 				</div>
 			</div>
 			<div class="panel panel-default">
+				<input type="hidden" name="empresavisitante_id" value="">
 				<div class="panel-heading"><h4 class="panel-title">Datos de la empresa</h4></div>
 				<div class="panel-body">
 					<input type="hidden" name="empresa_id">
@@ -241,7 +243,7 @@
 						<div class="row">
 							<label for="" class="control-label col-sm-4">Número de Ruc</label>
 							<div class="col-sm-8">
-								<?php echo $this->Form->text('ruc_numero', ['class' => 'form-control', 'id' => 'ruc_numero']) ?>
+								<input type="buscar" id="ruc_numero" name="ruc_numero" class="form-control search_empresa">
 							</div>
 						</div>
 					</div>

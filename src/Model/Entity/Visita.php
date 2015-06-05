@@ -8,6 +8,7 @@ class Visita extends Entity
 		'personal_id' => true,
 		'lugar_id' => true,
 		'motivo_id' => true,
+		'hdnorganigrama_id' => true,
 		'visita_observacion' => true
 		'visita_detalle' => true
 		'visita_fecha' => true
