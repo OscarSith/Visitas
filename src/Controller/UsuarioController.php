@@ -56,7 +56,7 @@ class UsuarioController extends AppController
 			$this->request->data['nombre_usuario']='';
 		}
 
-		if (!empty($this->request->data['estado'])) {			
+		if (!empty($this->request->data['estado'])) {
 			$usuarios=$usuarios->where( ['usuario.estado' => $this->request->data['estado'] ] );
 		}else{
 			$this->request->data['estado']='';

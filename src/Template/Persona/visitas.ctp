@@ -24,7 +24,7 @@
 					<input type="text" class="form-control" name="visita_fechaF" id="Visitavisita_fechaF" placeholder="Fecha de Visita" maxlength="10" value="<?= $valores['visita_fechaF'];?>"/>
 				</div>
 				<div class="col-sm-3">
-					<input type="text" class="form-control" name="visita_personal" id="Visitavisita_personal" placeholder="Funcionario" maxlength="10" value="<?= $valores['visita_personal'];?>"/>					
+					<input type="text" class="form-control" name="visita_personal" id="Visitavisita_personal" placeholder="Funcionario" maxlength="10" value="<?= $valores['visita_personal'];?>"/>
 				</div>
 				<div class="col-sm-3">
 					<?php echo $this->Form->button(__('Enviar'), ['class' => 'btn btn-danger']); ?>			
@@ -84,7 +84,7 @@
 							  		<li><a href="/visita-edit/<?php echo $key->id ?>">Editar</a></li>
 							  	<?php if ($key->vv['estado'] =='R'): ?>
 							  		<li><a href="#modal-horaingreso" data-toggle="modal">Hora Inicio</a></li>
-							  		<li><a href="#" class="anular" data-toggle="modal">Anular</a></li>
+							  		<li><a href="#modal-confirm-anular" class="anular" data-toggle="modal">Anular</a></li>
 							  	<?php elseif ($key->vv['estado'] =='D') : ?>
 							  		<li><a href="#modal-horasalida" data-toggle="modal">Hora Salida</a></li>
 							  	<?php elseif ($key->vv['estado'] =='A') : ?>
@@ -160,6 +160,27 @@
 	        	<button class="btn btn-primary">Guardar</button>
 			</div>
 
+		<?php echo $this->Form->end() ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-confirm-anular">
+  <div class="modal-dialog" style="z-index:2000">
+    <div class="modal-content">
+      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title"><i class="fa fa-warning text-warning fa-lg fa-fw"></i>Advertencia</h4>
+	</div>
+	<div class="modal-body">
+		<?php echo $this->Form->create(null , ['action' => 'anularvisita']) ?>
+			<input type="hidden" name="id" value="">
+			<p>¿Esta seguro de anular esta visita?</p>
+			<div class="text-right">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+	        	<button class="btn btn-primary">Aceptar</button>
+			</div>
 		<?php echo $this->Form->end() ?>
       </div>
     </div>

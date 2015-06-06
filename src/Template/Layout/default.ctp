@@ -12,8 +12,9 @@
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
-    <?= $this->Html->css('bootstrap-colorpicker.min.css') ?>
-    <?= $this->Html->css(['fullcalendar.css', 'fullcalendar.print.css']) ?>
+    <?= $this->Html->css('../bower_components/fullcalendar/dist/fullcalendar.min.css') ?>
+    <?= $this->Html->css(['fullcalendar.css']) ?>
+    <?= $this->Html->css(['fullcalendar.css']) ?>
   </head>
   <body class="skin-red sidebar-mini">
     <div class="wrapper">
@@ -151,34 +152,35 @@
       </footer>
       
       
-    <?= $this->Html->script('jquery-2.1.1.min') ?>
+    <?= $this->Html->script('../bower_components/jquery/dist/jquery.min') ?>
     <!-- Bootstrap 3.3.2 JS -->
-	  <?= $this->Html->script('bootstrap.min') ?>
-    <?= $this->Html->script('bootbox') ?>
+	  <?= $this->Html->script('../bower_components/bootstrap/dist/js/bootstrap.min') ?>
+    
     <!-- AdminLTE App -->
 	  <?= $this->Html->script('dist/app.min') ?>
     <?= $this->Html->script('jquery.autocomplete.min') ?>
+    <script src="/bower_components/handlebars/handlebars.min.js"></script>
+    <?= $this->Html->script('../bower_components/moment/min/moment.min') ?>
+    <?= $this->Html->script('../bower_components/fullcalendar/dist/fullcalendar.min') ?>
+    <?= $this->Html->script('../bower_components/fullcalendar/dist/lang/es') ?>
     <?= $this->Html->script('bootstrap-datepicker') ?>
     <?= $this->Html->script('bootstrap-datepicker.es') ?>
     <?= $this->Html->script('bootstrap-timepicker') ?>    
     <?= $this->Html->script('bootstrap-colorpicker.min') ?>
-    <script src="/bower_components/handlebars/handlebars.min.js"></script>
     <?= $this->Html->script('registroVisita') ?>
     <?= $this->Html->script('visita') ?>
     <?= $this->Html->script('visitavistante') ?>
     <?= $this->Html->script('motivo') ?>
-        
-    <script class="cssdesk" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js" type="text/javascript"></script>
-    <script class="cssdesk" src="//arshaw.com/js/fullcalendar-1.5.3/fullcalendar/fullcalendar.min.js" type="text/javascript"></script>
-  <script type="text/javascript">
+    <script type="text/javascript">
   $('#calendar').fullCalendar({
             header: {
             left: 'prev,next today',
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         },
-        defaultDate: '2015-02-12',
+        defaultDate: new Date(),
         editable: true,
+        lang: 'es',
         events: '/persona/getvisitas'
     });
   </script>

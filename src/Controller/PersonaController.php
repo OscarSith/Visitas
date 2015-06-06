@@ -477,32 +477,21 @@ class PersonaController extends AppController
 	}
 
 	public function anularvisita()
-	{		
-		
-		if ($this->request->is('ajax')) {
+	{
+		$this->loadComponent('RequestHandler');
+		$this->loadModel('Visitavisitante');
 
-			$this->loadComponent('RequestHandler');
-			$this->loadModel('Visitavisitante');
-			$data;
-			if (!empty($this->request->data['id'])) {
-
-				$visitante = $this->Visitavisitante->query()
-								->update()
-								->set(['estado'=>'A'])
-								->where(['id' => $this->request->data['id']])
-								->execute();
-				
-				$data = json_encode(['mensaje' => 'Se anuló la visita.']);	
-				$this->autoRender = false;				
-			}else{
-				
-				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
-				$this->autoRender = false;				
-			}			
-			echo $data;
-		}else {
-			throw new BadRequestException();
-		}		
+		if (!empty($this->request->data['id'])) {
+			$visitante = $this->Visitavisitante->query()
+							->update()
+							->set(['estado'=>'A'])
+							->where(['id' => $this->request->data['id']])
+							->execute();
+			$this->Flash->success('Se anuló la visita exitosamente');
+		} else {
+			$this->Flash->error('Los datos enviados son incorrectos.');
+		}
+		$this->redirect($this->referer());
 	}
 
 	public function activarvisita()

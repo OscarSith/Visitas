@@ -1,13 +1,14 @@
 $("#Visitavisita_fecha").datepicker({
         format: "dd/mm/yyyy",
         autoclose: true,
-        language: "es"
+        language: "es",
+        startDate: moment().subtract(2, 'd')._d
 });
 
 $("#Visitavisita_fechaF").datepicker({
         format: "dd/mm/yyyy",
         autoclose: true,
-        language: "es"
+        language: "es",
 });
 
 

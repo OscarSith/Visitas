@@ -36,32 +36,16 @@
     	$('#horaingreso',form).html($tr.children(':eq(4)').text().trim());
     });	
 
-    $(".anular").on('click',function(e){
+	$('#modal-confirm-anular')
+		.on('show.bs.modal', function(e) {
+			var id = $(e.relatedTarget).closest('tr').data('id'),
+				$form = $(e.currentTarget).find('form');
 
-    	var $tr = $(e.currentTarget).closest('tr');
-		var id=$tr.data('id');
-        bootbox.confirm("¿Esta seguro de anular esta visita?", function(result) {
-			if(result){				
-				$.ajax({
-			        'url': '/persona/anularvisita',
-			        'type': 'POST',
-			        'data': 'id='+$tr.data('id'),
-			        dataType: 'json'
-			    }).done(function(rec) {
-			    	bootbox.alert(rec.mensaje, function() {
-			    		window.location.reload();
-			    	});
-			    }).fail(function(xhr) {
-			        alert(xhr.responseJSON.message);
-			        console.log();
-			    }).always(function() {
-			        $inputs.prop('disabled', false);
-			    })
-			}
-				
+			$form.children('[name=id]').val(id);
+		})
+		.on('hide.bs.modal', function() {
+			$(this).find('form [name=id]').val('');
 		});
-
-    });
 
     $(".activar").on('click',function(e){
 
