@@ -1,6 +1,6 @@
 <?php 	
 	
-	echo $this->Form->create(null,['action' => 'index', 'id' => 'frm-buscarmotivo']) 
+	echo $this->Form->create($motivos,['action' => 'index', 'id' => 'frm-buscarmotivo', 'type' => 'get' ]) 
 ?>
 	<div class="box box-danger">
 		<div class="box-body">

@@ -13,8 +13,7 @@
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
     <?= $this->Html->css('../bower_components/fullcalendar/dist/fullcalendar.min.css') ?>
-    <?= $this->Html->css(['fullcalendar.css']) ?>
-    <?= $this->Html->css(['fullcalendar.css']) ?>
+    <?= $this->Html->css('bootstrap-colorpicker.min.css') ?>
   </head>
   <body class="skin-red sidebar-mini">
     <div class="wrapper">
