@@ -19,6 +19,7 @@
   "dependencies": {
     "bootstrap-treeview": "~1.2.0",
     "handlebars": "~3.0.3",
-    "fontawesome": "~4.3.0"
+    "fontawesome": "~4.3.0",
+    "fullcalendar": "~2.3.1"
   }
 }
