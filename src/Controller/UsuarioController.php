@@ -73,7 +73,7 @@ class UsuarioController extends AppController
 	    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
 
 	    			$this->Auth->setUser($user);
-	    			return $this->redirect('/persona');
+	    			return $this->redirect('/dashboard');
 
 				}else{
 					$this->Flash->error(__('Clave incorrecta.'));
@@ -202,10 +202,12 @@ class UsuarioController extends AppController
 			->set(['persona_nombre' => $this->request->data['persona_nombre']])
 			->set(['persona_apepat' => $this->request->data['persona_apepat']])
 			->set(['persona_apemat' => $this->request->data['persona_apemat']])
+			->set(['persona_nombres' => $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'] . ' ' . $this->request->data['persona_apemat']])
 			->set(['tipodocumento_id' => $this->request->data['tipodocumento_id']])
 			->set(['documento_numero' => $this->request->data['documento_numero']])
 			->set(['usuario_actualiza' => $this->request->data['usuario_actualiza']])
-			->where(['id' => $personalData->persona_id]);
+			->where(['id' => $personalData->persona_id])
+			->execute();
 
 		$this->Flash->success('Usuario Editado exitosamente.');
 		return $this->redirect(['action' => 'index']);
