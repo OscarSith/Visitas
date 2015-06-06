@@ -34,10 +34,8 @@
 						Entrar
 					</button>
 				</div>
-				<div class="alert alert-warning">
-					<?php echo $this->Flash->render() ?>
-					<?php echo $this->Flash->render('auth') ?>
-				</div>
+				<?php echo $this->Flash->render() ?>
+				<?php echo $this->Flash->render('auth') ?>
 			<?php echo $this->Form->end() ?>
 		</div>
 	</div>

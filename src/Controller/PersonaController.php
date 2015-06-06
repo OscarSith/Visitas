@@ -6,8 +6,8 @@ use Cake\Event\Event;
 class PersonaController extends AppController
 {
 	public $paginate = [
-        'limit' => 3
-    ];
+		'limit' => 5
+	];
 
     public function initialize()
     {
@@ -28,9 +28,10 @@ class PersonaController extends AppController
 		$persona = $this->Persona->newEntity();
 
 		$title = 'Registro de Visitas';
+		$titleP = 'Visitas';
 		$authUser = $this->Auth->user('usuario_login');
 
-		$this->set(compact('persona', 'lugares', 'motivos', 'documentos', 'cargos', 'title', 'authUser', 'organigramas'));
+		$this->set(compact('persona', 'lugares', 'motivos', 'documentos', 'cargos', 'title','titleP', 'authUser', 'organigramas'));
 	}
 
 	public function registrarVisita()
@@ -39,6 +40,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitavisitante');
 
+		debug($this->request->data);
 
 		if ($this->request->is('post')) {
 
@@ -48,7 +50,7 @@ class PersonaController extends AppController
 			}
 
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
-			$this->request->data['usuario_creador'] = 'Administrador';
+			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
 			$this->request->data['visita_horaprogramada'] = date('H:i:s');
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'];
@@ -83,59 +85,82 @@ class PersonaController extends AppController
 	public function registrarVisitante()
 	{
 		if ($this->request->is('ajax')) {
+			
 			$this->loadComponent('RequestHandler');
+			
+			$this->loadModel('Visitante');
+			$this->request->data['usuario_creador'] = 'Admin';
+			$nombre=$this->request->data['persona_nombre'];
+			$apellido=$this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
 
-			$this->request->data['fecha_creacion'] = date('Y-m-d');
-			$this->request->data['persona_nombres'] = $this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
-			$this->request->data['usuario_creador'] = 'Administrador';
-			$nombre = $this->request->data['persona_nombre'];
 
-			if (empty($this->request->data['visitante_id'])) {
-				$this->loadModel('Visitante');
-				// $this->loadModel('Personal');
+			if (empty($this->request->data['persona_id'])) {
 
+				
+				$this->request->data['persona_nombres'] = $nombre;
+				$this->request->data['tipo_persona'] = 'N';
 				$persona = $this->Persona->newEntity($this->request->data);
 				$this->Persona->save($persona);
 
 				$this->request->data['persona_id'] = $persona->id;
-				// $personal = $this->Personal->newEntity($this->request->data);
-				// $this->Personal->save($personal);
+			}	
+			if (empty($this->request->data['visitante_id']) ) {
 
 				$visitante = $this->Visitante->newEntity($this->request->data);
 				$this->Visitante->save($visitante);
-			}
 
-			if (empty($this->request->data['empresa_id']) && $this->request->data['empresa_id'] == '') {
-				$this->loadModel('Empresa');
+				$this->request->data['visitante_id'] = $visitante->id;				
+			}
+			
+			if ( empty($this->request->data['empresa_id']) ){
+
+				if ( !empty($this->request->data['empresa_nombre']) && !empty($this->request->data['ruc_numero']) ){
+						
+						$this->loadModel('Empresa');
+						
+						$this->request->data['tipodocumento_id'] = 3;
+						$this->request->data['persona_nombres'] = $this->request->data['empresa_nombre'];
+						$this->request->data['documento_numero'] = $this->request->data['ruc_numero'];
+						$this->request->data['tipo_persona'] = 'J';
+
+						$this->request->data['persona_apepat'] = null;
+						$this->request->data['persona_apemat'] = null;
+						$this->request->data['persona_nombre'] = null;
+
+						$persona = $this->Persona->newEntity($this->request->data);
+						$this->Persona->save($persona);
+						$this->request->data['persona_id'] = $persona->id;
+
+						$empresa = $this->Empresa->newEntity($this->request->data);
+						$this->Empresa->save($empresa);
+
+						$this->request->data['empresa_id'] = $empresa->id;
+				}else{
+
+					$this->Flash->error(__('Debe ingresar el RUC y el nombre de la empresa.'));
+				}
+
+			}
+			
+			if( empty($this->request->data['empresavisitante_id']) ){
+
 				$this->loadModel('Empresavisitantes');
-
-				$this->request->data['tipodocumento_id'] = 5;
-				$this->request->data['persona_nombres'] = $this->request->data['empresa_nombre'];
-
-				$persona = $this->Persona->newEntity($this->request->data);
-				$this->Persona->save($persona);
-				$this->request->data['persona_id'] = $persona->id;
-
-				$this->request->data['persona_apepat'] = null;
-				$this->request->data['persona_apemat'] = null;
-				$this->request->data['persona_nombre'] = null;
-				$empresa = $this->Empresa->newEntity($this->request->data);
-				$this->Empresa->save($empresa);
-
-				$this->request->data['empresa_id'] = $empresa->id;
 				$empresavisitantes = $this->Empresavisitantes->newEntity($this->request->data);
-				$this->Empresavisitantes->save($empresavisitantes);
+				$this->Empresavisitantes->save($empresavisitantes);	
 			}
 
+
+			
 			$data = json_encode([
 				'id' => $this->request->data['visitante_id'],
 				'documento_numero' => $this->request->data['documento_numero'],
 				'persona_nombre' => $nombre,
-				'persona_apellidos' => $this->request->data['persona_nombres']
+				'persona_apellidos' => $apellido
 			]);
+
 			$this->autoRender = false;
 			echo $data;
-		} else {
+		}else {
 			throw new BadRequestException();
 		}
 	}
@@ -169,14 +194,32 @@ class PersonaController extends AppController
 				['pl.persona_id = pr.id']
 			);
 
-		$this->set('visitas', $this->paginate($visitas));	
+		if (!empty($this->request->data['visita_fecha']) && !empty($this->request->data['visita_fechaF'])) {
+			
+			$visitas=$visitas->where(function ($exp, $q) {
+        		return $exp->between('visita_date',$this->request->data['visita_fecha'],$this->request->data['visita_fechaF']);
+    		});
+		}else{
+			$this->request->data['visita_fecha']="";
+			$this->request->data['visita_fechaF']="";
+		}
+
+		if (!empty($this->request->data['visita_personal'])) {
+			$visitas=$visitas->where(['pr.persona_nombres LIKE' => '%'.$this->request->data['visita_personal'].'%']);
+		}else{
+			$this->request->data['visita_personal']="";
+		}
+
+		$this->set('visitas', $this->paginate($visitas));
 		
 		$authUser = $this->Auth->user('usuario_login');
 		$visitas = $this->paginate($visitas);
 		$title = 'Listado de visitas';
+		$titleP = 'Visitas';
 
 		$visitavisitante = $this->Visitavisitante->newEntity();
-		$this->set(compact('visitas', 'authUser', 'title','visitavisitante'));
+		$valores=$this->request->data;
+		$this->set(compact('visitas', 'authUser', 'title','titleP','visitavisitante','valores'));
 	}
 
 	public function search()
@@ -200,7 +243,7 @@ class PersonaController extends AppController
 	{
 		$data = $this->Persona
 				->find()
-				->select(['p.id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero', 'p.cargo_id'])
+				->select(['p.id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero', 'p.cargo_id','p.organigrama_id'])
 				->join([
 					'p' => [
 						'table' => 'personal',
@@ -216,35 +259,65 @@ class PersonaController extends AppController
 
 	public function showByVisitanteId($id)
 	{
+		$this->loadModel('Empresavisitantes');
 		$data = $this->Persona
 				->find()
 				->select(['v.id', 'id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero'])
-				->innerJoin(
+				->leftJoin(
 					['v' => 'visitante'],
 					['persona.id = v.persona_id']
 				)
-				->where(['v.id = ' => $id])
+				->where(['persona.id = ' => $id])
 				->first();
 
-		$this->loadModel('Empresavisitantes');
-		$data2 = $this->Empresavisitantes
-			->find()
-			->select(['empresa_id', 'p.persona_nombres', 'p.documento_numero'])
-			->innerJoin(
-				['e' => 'empresa'],
-				['empresavisitantes.empresa_id = e.id']
-			)
-			->innerJoin(
-				['p' => 'persona'],
-				['p.id = e.persona_id']
-			)
-			->where(['visitante_id =' => $id])
-			->first();
+		if( !empty( $data->v['id'] ) ){
 
+			$data2 = $this->Empresavisitantes
+				->find()
+				->select(['id', 'empresa_id', 'p.persona_nombres', 'p.documento_numero'])
+				->innerJoin(
+					['e' => 'empresa'],
+					['empresavisitantes.empresa_id = e.id']
+				)
+				->innerJoin(
+					['p' => 'persona'],
+					['p.id = e.persona_id']
+				)
+				->where(['visitante_id =' => $data->v['id'] ])
+				->first();
+		}else{
+			$data2 = $this->Empresavisitantes;
+		}
 		$this->toJson($data, false, $data2, true);
 	}
 
-	public function showByRuc()
+	public function showByEmpresaID($id)
+	{
+		$this->loadModel('Empresa');
+		$data = $this->Empresa->find()
+			->select(['id','p.persona_nombres','p.documento_numero'])
+			->innerJoin(
+				['p' => 'persona'],
+				['empresa.persona_id = p.id']
+			)
+			->where(['empresa.id' => $id])
+			->first();
+
+		$this->toJson($data, false, null, true);
+
+	}
+
+	public function searchByDni()
+	{
+		$data = $this->Persona
+				->find()
+				->select(['data' => 'id', 'value' => 'persona_nombres'])
+				->where(['documento_numero LIKE' => '%'.$this->request->query['query'].'%']);
+			// debug($data);
+		$this->toJson($data, true);
+	}
+
+	public function searchByRuc()
 	{
 		$this->loadModel('Empresa');
 		$data = $this->Empresa->find()
@@ -255,23 +328,6 @@ class PersonaController extends AppController
 			)
 			->where(['p.documento_numero LIKE ' => '%'.$this->request->query['query'].'%']);
 
-		$this->toJson($data, true);
-	}
-
-	public function searchByDni()
-	{
-		$data = $this->Persona
-				->find()
-				->select(['data' => 'v.id', 'value' => 'persona_nombres'])
-				->join([
-					'v' => [
-						'table' => 'visitante',
-						'type' => 'inner',
-						'conditions' => 'persona.id = v.persona_id'
-					]
-				])
-				->where(['documento_numero LIKE' => '%'.$this->request->query['query'].'%']);
-			// debug($data);
 		$this->toJson($data, true);
 	}
 
@@ -356,7 +412,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visitante');
 
 		$visitas = $this->Visita->find()
-			->select(['vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
+			->select(['id','vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
 			->innerJoin(
 				['vv' => 'Visitavisitante'],
 				['visita.id = vv.visita_id']
@@ -384,21 +440,38 @@ class PersonaController extends AppController
 		foreach ($visitas as $key){
 
 			list($dia, $mes, $anio) = split('[/.-]', $key->visita_fecha);
-
+			list($hora, $minuto)     = split(':', $key->visita_horaprogramada);
+			list($min, $tipo) =split(' ', $minuto);
+			$hora_i;
+			$hora_f;
+			if( $tipo=='PM' ){
+				$hora_i=($hora+12).':'.$min.':00';
+				$hora_f=($hora+12+2).':'.$min.':00';
+			}else{
+				$hora_i=($hora).':'.$min.':00';
+				$hora_f=($hora+2).':'.$min.':00';
+			}
+			
 			array_push( $a, array('title'=> 'Visita para '.$key->pr['persona_nombres'].' de '.$key->pe['persona_nombres'],
-								  'start'=> $anio.'-'.$mes.'-'.$dia
+								  'start'=> $anio.'-'.$mes.'-'.$dia.' '.$hora_i,
+								  'end'  => $anio.'-'.$mes.'-'.$dia.' '.$hora_f,
+								  'allDay'=>false,
+								  'url'   =>'/visita-edit/'.$key->id,
+								  'color' => $this->random_color()
 								));
 		}
+		
 		$this->request->accepts('application/json');
 		echo json_encode($a);
 	}
 
 	public function verCalendario()
 	{
-		$title = 'Calendario de Visitas';
+		$titleP = 'Calendario de Visitas';
+		$title = '';
 		$authUser = $this->Auth->user('usuario_login');
-
-		$this->set(compact('title', 'authUser'));
+		
+		$this->set(compact('title','titleP',  'authUser'));
 	}
 
 	public function anularvisita()
@@ -474,5 +547,9 @@ class PersonaController extends AppController
 			}
 			debug($data);
 			die();
+	}
+
+	public function random_color() {
+    	return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
 	}
 }

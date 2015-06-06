@@ -6,17 +6,31 @@ class MotivoController extends AppController
 {
 	public function index()
 	{
-		
-		$motivos = $this->Motivo
-						->find();
+		$title = 'Motivos';
+		$titleP = 'Mantenimientos';
+		$authUser = $this->Auth->user('usuario_login');
+
+		$estados = $this->getDefaultCombosMantenimiento();
+		$motivos = $this->Motivo->find();
+
+		if (!empty($this->request->data['nombre_motivo'])) {			
+			$motivos=$motivos->where( ['upper(motivo_descripcion) LIKE' => '%'.strtoupper($this->request->data['nombre_motivo']).'%' ] );
+		}else{
+			$this->request->data['nombre_motivo']='';
+		}
+
+		if (!empty($this->request->data['estado'])) {			
+			$motivos=$motivos->where( ['estado' => $this->request->data['estado'] ] );
+		}else{
+			$this->request->data['estado']='';
+		}
 
 		$this->set('motivos', $this->paginate($motivos));	
-		
-		$authUser = $this->Auth->user('usuario_login');
 		$motivos = $this->paginate($motivos);
-		$title = 'Listado de motivos';
 
-		$this->set(compact('motivos', 'authUser', 'title'));
+		$valores=$this->request->data;
+		
+		$this->set(compact('motivos', 'authUser', 'title', 'titleP','valores','estados'));
 	}
 
 	public function registrar(){

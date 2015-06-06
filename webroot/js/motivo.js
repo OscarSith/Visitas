@@ -1,0 +1,1 @@
+$("#motivo_color").colorpicker();
