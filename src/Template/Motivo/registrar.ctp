@@ -18,6 +18,7 @@
 					</div>
 				</div>
 				<div class="form-group">
+
 					<div class="row">
                     	<label class="control-label col-sm-2">Color picker with addon:</label>
                     	<div class="col-sm-4">

@@ -1,5 +1,4 @@
 <?php 	
-	
 	echo $this->Form->create(null,['action' => 'index', 'id' => 'frm-buscarusuario']) 
 ?>
 	<div class="box box-danger">

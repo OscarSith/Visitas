@@ -137,4 +137,5 @@ class AppController extends Controller
         $estados = ['A' => 'Activo', 'I' => 'Inactivo'];
         return $estados;   
     }    
+
 }

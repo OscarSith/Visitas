@@ -219,6 +219,7 @@ class PersonaController extends AppController
 
 		$visitavisitante = $this->Visitavisitante->newEntity();
 		$valores=$this->request->data;
+
 		$this->set(compact('visitas', 'authUser', 'title','titleP','visitavisitante','valores'));
 	}
 
@@ -471,6 +472,7 @@ class PersonaController extends AppController
 		$title = '';
 		$authUser = $this->Auth->user('usuario_login');
 		
+
 		$this->set(compact('title','titleP',  'authUser'));
 	}
 

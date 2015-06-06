@@ -26,12 +26,12 @@ class UsuarioController extends AppController
 	public function index()
 	{
 		$title = 'Usuarios';
+
 		$titleP = 'Mantenimientos';
 
 		$authUser = $this->Auth->user('usuario_login');
-		
 		$estados = $this->getDefaultCombosMantenimiento();
-		
+
 		$usuarios = $this->Usuario->find()
 					->select(['id', 'usuario_creador', 'usuario_login', 'p.persona_nombres', 'p.documento_numero', 'estado', 'tipo_usuario'])
 					->join([
@@ -98,12 +98,10 @@ class UsuarioController extends AppController
 	    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
 
 	    			$this->Auth->setUser($user);
-	    			return $this->redirect('/persona');
-
+	    			return $this->redirect('/dashboard');
 				}else{
 					$this->Flash->error(__('Clave incorrecta.'));
 				}
-
 			}else{
 				$this->Flash->error(__('Usted no posee cuenta de usuario.'));
 			}
@@ -157,6 +155,7 @@ class UsuarioController extends AppController
 		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
 
 		$title = 'Nuevo Usuario';
+
 		$titleP = 'Mantenimientos';
 		$authUser = $this->Auth->user('usuario_login');
 		$route = Router::getRequest()->params['action'];
@@ -191,11 +190,13 @@ class UsuarioController extends AppController
 		$usuario->set('organigrama_id', $usuario->pl['organigrama_id']);
 
 		$title = 'Editar Usuario';
+
 		$titleP = 'Mantenimientos';
 		$authUser = $this->Auth->user('usuario_login');
 		$route = Router::getRequest()->params['action'];
 
 		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
+
 
 		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'usuario', 'title', 'titleP','authUser', 'route'));
 	}
@@ -229,10 +230,12 @@ class UsuarioController extends AppController
 			->set(['persona_nombre' => $this->request->data['persona_nombre']])
 			->set(['persona_apepat' => $this->request->data['persona_apepat']])
 			->set(['persona_apemat' => $this->request->data['persona_apemat']])
+			->set(['persona_nombres' => $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'] . ' ' . $this->request->data['persona_apemat']])
 			->set(['tipodocumento_id' => $this->request->data['tipodocumento_id']])
 			->set(['documento_numero' => $this->request->data['documento_numero']])
 			->set(['usuario_actualiza' => $this->request->data['usuario_actualiza']])
-			->where(['id' => $personalData->persona_id]);
+			->where(['id' => $personalData->persona_id])
+			->execute();
 
 		$this->Flash->success('Usuario Editado exitosamente.');
 		return $this->redirect(['action' => 'index']);

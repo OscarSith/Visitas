@@ -79,6 +79,7 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">OPCIONES</li>
+
             <li class="treeview <?= ( $titleP=='Visitas' ) ? "active": ""  ?>">
                 <a href="#">
                     <i class="fa fa-dashboard"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
