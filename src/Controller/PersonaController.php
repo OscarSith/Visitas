@@ -87,7 +87,6 @@ class PersonaController extends AppController
 		if ($this->request->is('ajax')) {
 			
 			$this->loadComponent('RequestHandler');
-			
 			$this->loadModel('Visitante');
 			$this->request->data['usuario_creador'] = 'Admin';
 			$nombre=$this->request->data['persona_nombre'];
@@ -95,8 +94,7 @@ class PersonaController extends AppController
 
 
 			if (empty($this->request->data['persona_id'])) {
-
-				
+			
 				$this->request->data['persona_nombres'] = $nombre;
 				$this->request->data['tipo_persona'] = 'N';
 				$persona = $this->Persona->newEntity($this->request->data);
@@ -104,6 +102,7 @@ class PersonaController extends AppController
 
 				$this->request->data['persona_id'] = $persona->id;
 			}	
+
 			if (empty($this->request->data['visitante_id']) ) {
 
 				$visitante = $this->Visitante->newEntity($this->request->data);
@@ -113,11 +112,8 @@ class PersonaController extends AppController
 			}
 			
 			if ( empty($this->request->data['empresa_id']) ){
-
 				if ( !empty($this->request->data['empresa_nombre']) && !empty($this->request->data['ruc_numero']) ){
-						
-						$this->loadModel('Empresa');
-						
+						$this->loadModel('Empresa');						
 						$this->request->data['tipodocumento_id'] = 3;
 						$this->request->data['persona_nombres'] = $this->request->data['empresa_nombre'];
 						$this->request->data['documento_numero'] = $this->request->data['ruc_numero'];
@@ -135,18 +131,16 @@ class PersonaController extends AppController
 						$this->Empresa->save($empresa);
 
 						$this->request->data['empresa_id'] = $empresa->id;
-				}else{
-
-					$this->Flash->error(__('Debe ingresar el RUC y el nombre de la empresa.'));
 				}
 
 			}
 			
 			if( empty($this->request->data['empresavisitante_id']) ){
-
-				$this->loadModel('Empresavisitantes');
-				$empresavisitantes = $this->Empresavisitantes->newEntity($this->request->data);
-				$this->Empresavisitantes->save($empresavisitantes);	
+				if(!empty( $this->request->data['empresa_id']) ){
+					$this->loadModel('Empresavisitantes');
+					$empresavisitantes = $this->Empresavisitantes->newEntity($this->request->data);
+					$this->Empresavisitantes->save($empresavisitantes);		
+				} 				
 			}
 
 

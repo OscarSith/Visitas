@@ -13,7 +13,7 @@
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
     <?= $this->Html->css('bootstrap-colorpicker.min.css') ?>
-    <?= $this->Html->css(['fullcalendar.css', 'fullcalendar.print.css']) ?>
+    <?= $this->Html->css('fullcalendar.css') ?>
   </head>
   <body class="skin-red sidebar-mini">
     <div class="wrapper">
@@ -178,6 +178,7 @@
             right: 'month,agendaWeek,agendaDay'
         },
         defaultDate: '2015-02-12',
+        locale: 'es',
         editable: true,
         events: '/persona/getvisitas'
     });
