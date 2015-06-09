@@ -16,5 +16,6 @@ class Persona extends Entity
 		'fecha_creacion' => true,
 		'usuario_actualiza' => true,
 		'fecha_actualiza' => true,
+		'tipo_persona' => true
 	];
 }

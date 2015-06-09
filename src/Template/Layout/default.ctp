@@ -3,24 +3,24 @@
   <head>
     <meta charset="UTF-8">
     <title>Visitas - ONAGI</title>
-    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-    
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>    
     <?= $this->Html->css('bootstrap.min.css') ?>
     <?= $this->Html->css('../bower_components/fontawesome/css/font-awesome.min.css') ?>
-    <?= $this->Html->css('main.css') ?>
     <?= $this->Html->css('dist/AdminLTE.css') ?>
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
+    <?= $this->Html->css('main.css') ?>
     <?= $this->Html->css('datepicker.css') ?>
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
     <?= $this->Html->css('../bower_components/fullcalendar/dist/fullcalendar.min.css') ?>
     <?= $this->Html->css('bootstrap-colorpicker.min.css') ?>
+    <?php $codPerfil = $this->request->session()->read('usuario.perfil'); ?>
   </head>
   <body class="skin-red sidebar-mini">
     <div class="wrapper">
       <header class="main-header">
         <!-- Logo -->
         <a href="#" class="logo">
-          <?php echo $this->Html->image('onagi.png', ['alt' => 'CakePHP']);?>
+          <?php echo $this->Html->image('onagi.png', ['alt' => 'ONAGI']);?>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top" role="navigation">
@@ -47,12 +47,14 @@
                       <?php echo $authUser ?>
                       <small><?php $fecha=getdate(); echo $fecha['mday'].'/'.$fecha['mon'].'/'.$fecha['year'].'<br>'; ?>
                         <?php 
-                          if( $this->request->session()->read('usuario.perfil')==1 ){
+                          if( $codPerfil==1 ){
                             echo "Administrador";
-                          }else if($this->request->session()->read('usuario.perfil')==2){
+                          }else if($codPerfil==2){
                             echo "Seguridad";
-                          }else{
-                            echo "Otro";
+                          }else if($codPerfil==3){
+                            echo "Secretaría";
+                          }else if($codPerfil==4){
+                            echo "Jefatura";
                           }
                         ?> 
                       </small>
@@ -79,23 +81,31 @@
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
             <li class="header">OPCIONES</li>
+            <?php if ( $codPerfil!=2 ) { ?>
+            <li <?= ($titleP=='Dashboad')?"class='active'":""  ?>>
+                <a href="/dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+            </li>
 
+            <li <?= ($titleP=='Calendario de Visitas')?"class='active'":""  ?>>
+                <a href="/visita/vercalendario"><i class="fa fa-calendar"></i> <span>Agenda</span></a>
+            </li>
+            <?php } ?>
+            
             <li class="treeview <?= ( $titleP=='Visitas' ) ? "active": ""  ?>">
                 <a href="#">
-                    <i class="fa fa-dashboard"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-book"></i> <span>Visitas</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li <?= ($title=='Registro de Visitas')?"class='active'":"" ?>>
                         <a href="/persona"><i class="fa fa-fw fa-dashboard"></i> Registrar Visita</a>
                     </li>
                     <li <?= ($title=='Listado de visitas')?"class='active'":"" ?>>
-                        <a href="/persona/visitas"><i class="fa fa-fw fa-icon-desktop"></i> Visitas</a>
+                        <a href="/persona/visitas"><i class="fa fa-fw fa-edit"></i> Visitas</a>
                     </li>
                 </ul>
             </li>
-            <li <?= ($titleP=='Calendario de Visitas')?"class='active'":""  ?>>
-                <a href="/persona/vercalendario"><i class="fa fa-book"></i> <span>Agenda</span></a>
-            </li>
+                        
+            <?php if ( $codPerfil==1 ) { ?>
             <li class="treeview <?= ($titleP=='Mantenimientos')?"active":""  ?>">
                 <a href="#">
                     <i class="fa fa-group fa-fw"></i> <span>Mantenimientos</span> <i class="fa fa-angle-left pull-right"></i>
@@ -109,6 +119,7 @@
                     </li>
                 </ul>
             </li>
+            <?php } ?>
           </ul>
         </section>
         <!-- /.sidebar -->
@@ -154,11 +165,10 @@
     <?= $this->Html->script('../bower_components/jquery/dist/jquery.min') ?>
     <!-- Bootstrap 3.3.2 JS -->
 	  <?= $this->Html->script('../bower_components/bootstrap/dist/js/bootstrap.min') ?>
-    
     <!-- AdminLTE App -->
 	  <?= $this->Html->script('dist/app.min') ?>
     <?= $this->Html->script('jquery.autocomplete.min') ?>
-    <script src="/bower_components/handlebars/handlebars.min.js"></script>
+    <?= $this->Html->script('../bower_components/handlebars/handlebars.min') ?>
     <?= $this->Html->script('../bower_components/moment/min/moment.min') ?>
     <?= $this->Html->script('../bower_components/fullcalendar/dist/fullcalendar.min') ?>
     <?= $this->Html->script('../bower_components/fullcalendar/dist/lang/es') ?>
@@ -166,12 +176,14 @@
     <?= $this->Html->script('bootstrap-datepicker.es') ?>
     <?= $this->Html->script('bootstrap-timepicker') ?>    
     <?= $this->Html->script('bootstrap-colorpicker.min') ?>
+    <?= $this->Html->script('jquery.canvasjs.min') ?>
+    <?= $this->Html->script('excanvas') ?>
     <?= $this->Html->script('registroVisita') ?>
     <?= $this->Html->script('visita') ?>
     <?= $this->Html->script('visitavistante') ?>
     <?= $this->Html->script('motivo') ?>
     <script type="text/javascript">
-  $('#calendar').fullCalendar({
+    $('#calendar').fullCalendar({
             header: {
             left: 'prev,next today',
             center: 'title',
@@ -180,8 +192,52 @@
         defaultDate: new Date(),
         editable: true,
         lang: 'es',
-        events: '/persona/getvisitas'
+        events: '/visita/getvisitas'
     });
+
+    var dataEstado = [];
+        $.getJSON("/visita/visitantesbyestado", function (data) {
+          var contvisitas=0;
+            for (var i = 0; i <= data.length -1; i++) {
+              var estado= ( data[i].estado=='R' ) ? 'Registrado': ( data[i].estado=='F' )? 'Finalizado': ( data[i].estado=='D' )? 'En Desarrollo':( data[i].estado=='A' )? 'Anulado':'Si definir';
+              contvisitas=contvisitas+data[i].count;
+              dataEstado.push({ label: estado, y: parseInt(data[i].count) });
+            }
+            var chart = new CanvasJS.Chart("barContainer", {
+                theme: "theme1",//theme1
+                title: {
+                    text: "Visitas por Estado"
+                },
+                legend: { text: "Visitas" },
+                // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
+                data: [ {                    
+                          type: "doughnut",
+                          dataPoints: dataEstado
+                        }
+                    ]
+            });
+            chart.render();
+        });
+      var dataOficina = [];
+        $.getJSON("/visita/visitantesbyoficina", function (data) {
+            for (var i = 0; i <= data.length -1; i++) {
+                dataOficina.push({ label: data[i].o.organigrama_nombre, y: parseInt(data[i].count) });
+            }
+            var chart = new CanvasJS.Chart("pieContainer", {
+                theme: "theme1",//theme1
+                title: {
+                    text: "Visitas por Oficina"
+                },
+                // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
+                data: [ {                    
+                          type: "bar",
+                          dataPoints: dataOficina
+                        }
+                    ]
+            });
+            chart.render();
+        });  
+
   </script>
   </body>
 </html>

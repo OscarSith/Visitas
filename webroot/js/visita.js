@@ -17,6 +17,6 @@ $('#modal-delete-confirm')
     .on('show.bs.modal', function(e) {
         $(this).find('[name=id]').val($(e.relatedTarget).closest('tr').data('id'));
     })
-    .on('hide.bs.modal', function(e) {
+   .on('hide.bs.modal', function(e) {
         $(this).find('[name=id]').val('');
     });

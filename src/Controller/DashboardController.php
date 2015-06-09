@@ -11,8 +11,9 @@ class DashboardController extends AppController {
 
 	public function index()
 	{
-		$title = 'Dashboad';
+		$titleP = 'Dashboad';
+		$title = 'Estadisticas';
 		$authUser = $this->Auth->user('usuario_login');
-		$this->set(compact('authUser', 'title'));
+		$this->set(compact('authUser', 'title', 'titleP'));
 	}
 }

@@ -23,7 +23,6 @@
                     	<label class="control-label col-sm-2">Color picker with addon:</label>
                     	<div class="col-sm-4">
                     		<input type="text" class="form-control" id="motivo_color" name="motivo_color" />
-                      		<div class="input-group-addon"><i style="background-color: rgb(132, 92, 92);"></i></div>
                     	</div>
                     </div>	
                 </div>

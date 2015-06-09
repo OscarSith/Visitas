@@ -66,6 +66,10 @@ Router::scope('/', function ($routes) {
     $routes->fallbacks('InflectedRoute');
 
     Router::url('persona', ['controller' => 'persona']);
+    Router::url('empresa', ['controller' => 'empresa']);
+    Router::url('organigrama', ['controller' => 'organigrama']);
+    Router::url('motivo', ['controller' => 'motivo']);
+    
     Router::connect('persona/getOrganigramaByPadre/:id',
                     ['controller' => 'persona', 'action' => 'getOrganigramaByPadre'],
                     ['pass' => ['id'] ]
@@ -74,12 +78,7 @@ Router::scope('/', function ($routes) {
                     ['controller' => 'visita', 'action' => 'show'],
                     ['pass' => ['id'] ]
         );
-    Router::connect('persona/getVisitas',
-                    ['controller' => 'persona', 'action' => 'getVisitas']
-        );
-    Router::url('empresa', ['controller' => 'empresa']);
-    Router::url('organigrama', ['controller' => 'organigrama']);
-    Router::url('organigrama', ['controller' => 'organigrama']);
+    
 });
 
 

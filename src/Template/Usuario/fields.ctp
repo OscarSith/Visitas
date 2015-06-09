@@ -15,7 +15,7 @@
 <div class="form-group">
 	<div class="row">
 		<div class="col-sm-6">
-			<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control']); ?>
+			<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control','empty' => 'Seleccione']); ?>
 		</div>
 		<div class="col-sm-6">
 			<?php echo $this->Form->text('documento_numero', ['class' => 'form-control', 'placeholder' => 'Número de documento', 'required']); ?>
@@ -24,17 +24,21 @@
 </div>
 <div class="form-group">
 	<label>Organigrama</label>
-	<?php echo $this->Form->select('organigrama_id', $organigramas, ['class' => 'form-control']); ?>
+	<?php echo $this->Form->select('organigrama_id', $organigramas, ['class' => 'form-control','empty' => 'Seleccione']); ?>
+</div>
+<div class="form-group">
+	<label>Perfil</label>
+	<?php echo $this->Form->select('perfil_id', $perfiles, ['class' => 'form-control']); ?>
 </div>
 <div class="form-group">
 	<div class="row">
 		<div class="col-sm-6">
 			<label>Cargo</label>
-			<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control']); ?>
+			<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control','empty' => 'Seleccione']); ?>
 		</div>
 		<div class="col-sm-6">
 			<label for="">Sede</label>
-			<?php echo $this->Form->select('sede_id', $sedes, ['class' => 'form-control']); ?>
+			<?php echo $this->Form->select('sede_id', $sedes, ['class' => 'form-control','empty' => 'Seleccione']); ?>
 		</div>
 	</div>
 </div>

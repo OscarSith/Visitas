@@ -40,7 +40,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitavisitante');
 
-		debug($this->request->data);
+		
 
 		if ($this->request->is('post')) {
 
@@ -52,8 +52,9 @@ class PersonaController extends AppController
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
-			$this->request->data['visita_horaprogramada'] = date('H:i:s');
+			$this->request->data['visita_horaprogramada'] = $this->request->data['visita_horaprogramada'];
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'];
+			$this->request->data['organigrama_id'] = $this->request->data['hdnorganigrama_id'];
 
 			if (empty($this->request->data['personal_id']) || $this->request->data['personal_id'] == '') {
 				$this->request->data['sede_id'] = 1;
@@ -95,7 +96,7 @@ class PersonaController extends AppController
 
 			if (empty($this->request->data['persona_id'])) {
 			
-				$this->request->data['persona_nombres'] = $nombre;
+				$this->request->data['persona_nombres'] = $nombre.' '.$apellido;
 				$this->request->data['tipo_persona'] = 'N';
 				$persona = $this->Persona->newEntity($this->request->data);
 				$this->Persona->save($persona);
@@ -112,7 +113,9 @@ class PersonaController extends AppController
 			}
 			
 			if ( empty($this->request->data['empresa_id']) ){
-				if ( !empty($this->request->data['empresa_nombre']) && !empty($this->request->data['ruc_numero']) ){
+				if ( !empty($this->request->data['empresa_nombre']) || !empty($this->request->data['ruc_numero']) ){
+					if( trim($this->request->data['empresa_nombre']) != '' || trim($this->request->data['ruc_numero'] != '') ){
+
 						$this->loadModel('Empresa');						
 						$this->request->data['tipodocumento_id'] = 3;
 						$this->request->data['persona_nombres'] = $this->request->data['empresa_nombre'];
@@ -131,6 +134,7 @@ class PersonaController extends AppController
 						$this->Empresa->save($empresa);
 
 						$this->request->data['empresa_id'] = $empresa->id;
+					}
 				}
 
 			}
@@ -307,7 +311,8 @@ class PersonaController extends AppController
 		$data = $this->Persona
 				->find()
 				->select(['data' => 'id', 'value' => 'persona_nombres'])
-				->where(['documento_numero LIKE' => '%'.$this->request->query['query'].'%']);
+				->where(['documento_numero LIKE' => '%'.$this->request->query['query'].'%'])
+				->where(['tipo_persona' => 'N']);
 			// debug($data);
 		$this->toJson($data, true);
 	}
@@ -398,78 +403,7 @@ class PersonaController extends AppController
 		}
 	}
 
-	public function getVisitas()
-	{
-		
-		$this->loadModel('Personal');
-		$this->loadModel('Visitavisitante');
-		$this->loadModel('Visita');
-		$this->loadModel('Visitante');
-
-		$visitas = $this->Visita->find()
-			->select(['id','vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
-			->innerJoin(
-				['vv' => 'Visitavisitante'],
-				['visita.id = vv.visita_id']
-			)
-			->innerJoin(
-				['vi' => 'Visitante'],
-				['vv.visitante_id = vi.id']
-			)
-			->innerJoin(
-				['pe' => 'Persona'],
-				['vi.persona_id = pe.id']
-			)
-			->innerJoin(
-				['pl' => 'Personal'],
-				['visita.personal_id = pl.id']
-			)
-			->innerJoin(
-				['pr' => 'Persona'],
-				['pl.persona_id = pr.id']
-			);
-
-		$this->autoRender = false;
-		$a = array();
-		
-		foreach ($visitas as $key){
-
-			list($dia, $mes, $anio) = split('[/.-]', $key->visita_fecha);
-			list($hora, $minuto)     = split(':', $key->visita_horaprogramada);
-			list($min, $tipo) =split(' ', $minuto);
-			$hora_i;
-			$hora_f;
-			if( $tipo=='PM' ){
-				$hora_i=($hora+12).':'.$min.':00';
-				$hora_f=($hora+12+2).':'.$min.':00';
-			}else{
-				$hora_i=($hora).':'.$min.':00';
-				$hora_f=($hora+2).':'.$min.':00';
-			}
-			
-			array_push( $a, array('title'=> 'Visita para '.$key->pr['persona_nombres'].' de '.$key->pe['persona_nombres'],
-								  'start'=> $anio.'-'.$mes.'-'.$dia.' '.$hora_i,
-								  'end'  => $anio.'-'.$mes.'-'.$dia.' '.$hora_f,
-								  'allDay'=>false,
-								  'url'   =>'/visita-edit/'.$key->id,
-								  'color' => $this->random_color()
-								));
-		}
-		
-		$this->request->accepts('application/json');
-		echo json_encode($a);
-	}
-
-	public function verCalendario()
-	{
-		$titleP = 'Calendario de Visitas';
-		$title = '';
-		$authUser = $this->Auth->user('usuario_login');
-		
-
-		$this->set(compact('title','titleP',  'authUser'));
-	}
-
+	
 	public function anularvisita()
 	{
 		$this->loadComponent('RequestHandler');
@@ -516,25 +450,4 @@ class PersonaController extends AppController
 		}	
 	}
 
-	public function probandoconsulta($id=null,$query=null){
-		$this->loadModel('Empresa');
-		$data = $this->Empresa->find()
-			->select(['data' => 'empresa.id', 'value' => 'p.persona_nombres'])
-			->innerJoin(
-				['p' => 'persona'],
-				['empresa.persona_id = p.id']
-			);
-			if ( $query != null ) {
-				$data=$data->where(['p.documento_numero LIKE ' => '%'.$query.'%']);
-			}
-			if( $id != null ){
-				$data=$data->where(['id' => $id]);
-			}
-			debug($data);
-			die();
-	}
-
-	public function random_color() {
-    	return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-	}
 }

@@ -1,9 +1,4 @@
-<div class="col-md-4 col-md-offset-4">
-	<div class="login-panel panel panel-default">
-	    <div class="panel-heading">
-	        <h3 class="panel-title">Ingresar al Sistema</h3>
-	    </div>
-	    <div class="panel-body">
+		<p class="login-box-msg">Ingrese sus datos de usuario</p>
 			<?php echo $this->Form->create() ?>
 				<div class="form-group has-feedback">
 					<?php echo $this->Form->text('usuario_login', ['class' => 'form-control', 'placeholder' => 'Usuario', 'autofocus', 'required']) ?>
@@ -18,7 +13,7 @@
 					</span>
 				</div>
 				<div>
-					<div class="pull-left checkbox hidden">
+					<div class="pull-left checkbox	">
 						<label>
 							<input type="checkbox" name="remember"> Recordarme 
 						</label>
@@ -37,6 +32,3 @@
 				<?php echo $this->Flash->render() ?>
 				<?php echo $this->Flash->render('auth') ?>
 			<?php echo $this->Form->end() ?>
-		</div>
-	</div>
-</div>

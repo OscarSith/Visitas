@@ -46,9 +46,10 @@ class VisitaController extends AppController
 				->all();
 
 		$title = 'Editar Visita';
+		$titleP = 'Visita';
 		$authUser = $this->Auth->user('usuario_login');
 		
-		$this->set(compact('visita', 'title', 'lugares', 'cargos', 'motivos', 'organigramas', 'documentos', 'personal', 'visitantes', 'visitavisitante','authUser'));
+		$this->set(compact('visita', 'title','titleP', 'lugares', 'cargos', 'motivos', 'organigramas', 'documentos', 'personal', 'visitantes', 'visitavisitante','authUser'));
 	}
 
 	public function guardarVisita()
@@ -83,5 +84,120 @@ class VisitaController extends AppController
 
 		$this->Flash->success(__('Visita Actualizado'));
 		$this->redirect($this->referer());
+	}
+
+	public function visitantesbyoficina(){
+		
+		$this->loadModel('Visitavisitante');
+		$visita = $this->Visitavisitante->find();
+		 
+		$visita->select(['count' => $visita->func()->count('*'), 'o.organigrama_nombre'])
+		 		->innerJoin(
+							['v' => 'Visita'],
+							['visita_id = v.id']
+				)
+		 		->innerJoin(
+							['o' => 'Organigrama'],
+							['v.organigrama_id = o.id']
+				)
+				->group('o.id');
+		
+		$this->autoRender = false;
+		$this->request->accepts('application/json');
+		echo json_encode($visita);		
+	}
+
+	public function visitantesbyestado(){		
+		$this->loadModel('Visitavisitante');
+		$visita = $this->Visitavisitante->find();		 
+		$visita->select(['count' => $visita->func()->count('*'), 'estado'])
+		 		->innerJoin(
+							['v' => 'Visita'],
+							['visita_id = v.id']
+				)
+		 		->innerJoin(
+							['o' => 'Organigrama'],
+							['v.organigrama_id = o.id']
+				)
+				->group('Visitavisitante.estado');
+		$this->autoRender = false;
+		$this->request->accepts('application/json');
+		echo json_encode($visita);		
+	}
+
+	public function getVisitas()
+	{
+		
+		$this->loadModel('Personal');
+		$this->loadModel('Visitavisitante');
+		$this->loadModel('Visita');
+		$this->loadModel('Visitante');
+
+		$visitas = $this->Visita->find()
+			->select(['id','vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida','m.motivo_color'])
+			->innerJoin(
+				['vv' => 'Visitavisitante'],
+				['visita.id = vv.visita_id']
+			)
+			->innerJoin(
+				['m' => 'Motivo'],
+				['motivo_id = m.id']
+			)
+			->innerJoin(
+				['vi' => 'Visitante'],
+				['vv.visitante_id = vi.id']
+			)
+			->innerJoin(
+				['pe' => 'Persona'],
+				['vi.persona_id = pe.id']
+			)
+			->innerJoin(
+				['pl' => 'Personal'],
+				['visita.personal_id = pl.id']
+			)
+			->innerJoin(
+				['pr' => 'Persona'],
+				['pl.persona_id = pr.id']
+			);
+
+		$this->autoRender = false;
+		$a = array();
+		
+		foreach ($visitas as $key){
+
+			list($dia, $mes, $anio) = split('[/.-]', $key->visita_fecha);
+			list($hora, $minuto)     = split(':', $key->visita_horaprogramada);
+			list($min, $tipo) =split(' ', $minuto);
+			$hora_i;
+			$hora_f;
+			if( $tipo=='PM' ){
+				$hora_i=($hora+12).':'.$min.':00';
+				$hora_f=($hora+12+2).':'.$min.':00';
+			}else{
+				$hora_i=($hora).':'.$min.':00';
+				$hora_f=($hora+2).':'.$min.':00';
+			}
+			
+			array_push( $a, array('title'=> 'Visita para '.$key->pr['persona_nombres'].' de '.$key->pe['persona_nombres'],
+								  'start'=> $anio.'-'.$mes.'-'.$dia.' '.$hora_i,
+								  'end'  => $anio.'-'.$mes.'-'.$dia.' '.$hora_f,
+								  'allDay'=>false,
+								  'url'   =>'/visita-edit/'.$key->id,
+								  'color' => $key->m['motivo_color']
+								));
+		}
+		
+		$this->request->accepts('application/json');
+		echo json_encode($a);
+	}
+
+	public function verCalendario()
+	{
+		$titleP = 'Calendario de Visitas';
+		$title = '';
+		$authUser = $this->Auth->user('usuario_login');
+		
+
+		$this->set(compact('title','titleP',  'authUser'));
 	}
 }

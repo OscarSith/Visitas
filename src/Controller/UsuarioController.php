@@ -95,10 +95,18 @@ class UsuarioController extends AppController
 	    							->first();
 	    			$this->request->session()->write('usuario.perfil', $data->perfil_id);
 	    			$this->request->session()->write('usuario.sede',   $personal->sede_id);
-	    			$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
-
+	    			
 	    			$this->Auth->setUser($user);
-	    			return $this->redirect('/dashboard');
+	    			if ( $data->perfil_id != 2) {
+	    				
+	    				$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
+	    				return $this->redirect('/dashboard');
+	    			}else {
+
+	    				$this->request->session()->write('usuario.organigrama', 1);
+	    				return $this->redirect('/persona');
+	    			}
+	    			
 				}else{
 					$this->Flash->error(__('Clave incorrecta.'));
 				}
@@ -151,8 +159,10 @@ class UsuarioController extends AppController
 
 	public function registrar()
 	{
+
 		$usuario = $this->Usuario->newEntity();
 		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
+		$perfiles = $this->getDefaultComboPerfil();
 
 		$title = 'Nuevo Usuario';
 
@@ -160,13 +170,13 @@ class UsuarioController extends AppController
 		$authUser = $this->Auth->user('usuario_login');
 		$route = Router::getRequest()->params['action'];
 
-		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'title','titleP','authUser', 'route'));
+		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'perfiles','title','titleP','authUser', 'route'));
 	}
 
 	public function edit($id)
 	{
 		$usuario = $this->Usuario->find()
-					->select(['id', 'usuario_login', 'personal_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero', 'p.tipodocumento_id', 'pl.cargo_id', 'pl.sede_id', 'pl.organigrama_id'])
+					->select(['id', 'usuario_login', 'personal_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero', 'p.tipodocumento_id', 'pl.cargo_id', 'pl.sede_id', 'pl.organigrama_id','perfil_id'])
 					->join([
 						'table' => 'Personal',
 						'alias' => 'pl',
@@ -185,6 +195,7 @@ class UsuarioController extends AppController
 		$usuario->set('persona_apemat', $usuario->p['persona_apemat']);
 		$usuario->set('documento_numero', $usuario->p['documento_numero']);
 		$usuario->set('tipodocumento_id', $usuario->p['tipodocumento_id']);
+		$usuario->set('perfil_id', $usuario->perfil_id);
 		$usuario->set('cargo_id', $usuario->pl['cargo_id']);
 		$usuario->set('sede_id', $usuario->pl['sede_id']);
 		$usuario->set('organigrama_id', $usuario->pl['organigrama_id']);
@@ -196,9 +207,9 @@ class UsuarioController extends AppController
 		$route = Router::getRequest()->params['action'];
 
 		list($documentos, $cargos, $sedes, $organigramas) = $this->getDefaultCombosUsuario();
+		$perfiles = $this->getDefaultComboPerfil();
 
-
-		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'usuario', 'title', 'titleP','authUser', 'route'));
+		$this->set(compact('usuario', 'documentos', 'cargos', 'sedes', 'organigramas', 'perfiles','usuario', 'title', 'titleP','authUser', 'route'));
 	}
 
 	public function update($id)
@@ -213,6 +224,7 @@ class UsuarioController extends AppController
 		// Actualiza Tabla Usuario
 		$this->Usuario->query()->update()
 			->set(['usuario_login' => $this->request->data['usuario_login']])
+			->set(['perfil_id' => $this->request->data['perfil_id']])
 			->where(['id' => $id])
 			->execute();
 

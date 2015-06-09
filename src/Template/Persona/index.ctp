@@ -69,6 +69,7 @@
 			</div>
 			<div class="panel-body">
 				<input type="hidden" name="personal_id" value="">
+				<input type="hidden" name="hdnorganigrama_id" value="">
 				<div class="form-group">
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Buscar Persona</label>

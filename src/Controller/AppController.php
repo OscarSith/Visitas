@@ -97,7 +97,7 @@ class AppController extends Controller
             'keyField' => 'id',
             'valueField' => 'organigrama_nombre'
         ])
-        ->where(['id' => 1]);
+        ->where(['id' => $this->request->session()->read('usuario.organigrama')]);
 
         return [$lugares, $motivos, $documentos, $cargos, $organigramas];
     }
@@ -137,5 +137,11 @@ class AppController extends Controller
         $estados = ['A' => 'Activo', 'I' => 'Inactivo'];
         return $estados;   
     }    
+
+    public function getDefaultComboPerfil()
+    {
+        $perfiles = ['' => 'Seleccione','1' => 'Administrador', '2' => 'Seguridad', '3' => 'Secretaria', '4' => 'Jefatura'];
+        return $perfiles;   
+    } 
 
 }
