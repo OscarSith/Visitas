@@ -35,13 +35,13 @@ class UsuarioController extends AppController
 		$usuarios = $this->Usuario->find()
 					->select(['id', 'usuario_creador', 'usuario_login', 'p.persona_nombres', 'p.documento_numero', 'estado', 'tipo_usuario'])
 					->join([
-						'table' => 'Personal',
-						'alias' => 'pl',
+						'table' => 'Persona',
+						'alias' => 'p',
 						'type' => 'inner',
-						'conditions' => 'pl.id = usuario.personal_id'
+						'conditions' => 'p.id = usuario.persona_id'
 					])
 					->innerJoin(
-						['p' => 'Persona'], ['p.id = pl.persona_id']
+						['pl' => 'Personal'], ['p.id = pl.persona_id']
 					);
 
 		if (!empty($this->request->data['login_usuario'])) {			
@@ -87,11 +87,9 @@ class UsuarioController extends AppController
 			} else if ($data->tipo_usuario=='E') {
         		$user = $this->Auth->identify();
         		if ($user) {
-
 					$this->loadModel('Personal');
-
 					$personal = $this->Personal->find()
-									->where(['id' => $data->personal_id])
+									->where(['persona_id' => $data->persona_id])
 	    							->first();
 	    			$this->request->session()->write('usuario.perfil', $data->perfil_id);
 	    			$this->request->session()->write('usuario.sede',   $personal->sede_id);
