@@ -195,7 +195,7 @@
         events: '/visita/getvisitas'
     });
 
-    var dataEstado = [];
+      var dataEstado = [];
         $.getJSON("/visita/visitantesbyestado", function (data) {
           var contvisitas=0;
             for (var i = 0; i <= data.length -1; i++) {
@@ -236,8 +236,29 @@
                     ]
             });
             chart.render();
-        });  
+        });
+      $('#inputSearchPerson').autocomplete({
+        serviceUrl: '/persona/search',
+        minChars: 3,
+        onSelect: function(suggestion) {
+          var $this = $(this),
+              flag = $this.data('exec');
 
+          $this.closest('form').children('[name=persona_id]').val(suggestion.data);
+          $this.val( suggestion.value );
+          if (!flag) {
+              $this.prop('readonly', true).next().removeClass('visibility-hidden');
+              $this.data('exec', true);
+          }
+        }
+      });
+      $('#frm-add-user-credentials').on('click', '.btn-remove-text-autoc', function(e) {
+        e.preventDefault();
+            var $this = $(this);
+            var $text = $this.parent().addClass('visibility-hidden').prev().prop('readonly', false).focus();
+            $this.closest('form').children('[name=persona_id]').val('').end().find('#inputSearchPerson').val('');
+            $text.data('exec', false);
+      });
   </script>
   </body>
 </html>

@@ -4,6 +4,7 @@ namespace App\Controller;
 use Cake\Event\Event;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Routing\Router;
+use Cake\Validation\Validator;
 
 class UsuarioController extends AppController
 {
@@ -44,13 +45,13 @@ class UsuarioController extends AppController
 						['pl' => 'Personal'], ['p.id = pl.persona_id']
 					);
 
-		if (!empty($this->request->data['login_usuario'])) {			
+		if (!empty($this->request->data['login_usuario'])) {
 			$usuarios=$usuarios->where( ['usuario.usuario_login LIKE' => '%'.$this->request->data['login_usuario'].'%' ] );
 		}else{
 			$this->request->data['login_usuario']='';
 		}
 
-		if (!empty($this->request->data['nombre_usuario'])) {			
+		if (!empty($this->request->data['nombre_usuario'])) {
 			$usuarios=$usuarios->where( ['upper(p.persona_nombres) LIKE' => '%'.strtoupper($this->request->data['nombre_usuario']).'%' ] );
 		}else{
 			$this->request->data['nombre_usuario']='';
@@ -73,6 +74,11 @@ class UsuarioController extends AppController
 		$this->layout = 'signin';
 
 		if ($this->request->is('post')) {
+
+			if (empty($this->request->data['usuario_login']) || empty($this->request->data['usuario_clave'])) {
+				$this->Flash->error('El nombre usuario y la contraseña son requeridos');
+				return $this->redirect($this->referer());
+			}
 
 			$data = $this->Usuario->find()
     					->where(['usuario_login' => $this->request->data['usuario_login']])
@@ -120,39 +126,57 @@ class UsuarioController extends AppController
 		$this->loadModel('Personal');
 
 		if ($this->request->is('post')) {
-			$this->request->data['perfil_id'] = 1;
-			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
-			$this->request->data['usuario_clave']=(new DefaultPasswordHasher)->hash($this->request->data['usuario_clave']);
+			$validator = new Validator();
 
-			$persona = $this->Persona->newEntity();
+			$validator
+			    ->notEmpty('persona_nombre', 'Mensaje personalizado')
+			    ->notEmpty('persona_apepat')
+		        ->notEmpty('persona_apemat')
+		        ->notEmpty('tipodocumento_id')
+		        ->notEmpty('documento_numero')
+		        ->notEmpty('organigrama_id')
+		        ->notEmpty('perfil_id')
+		        ->notEmpty('cargo_id')
+		        ->notEmpty('sede_id')
+		        ->notEmpty('usuario_login')
+		        // no funciona
+		  		//	->add('usuario_login', [
+				//     'unique' => ['rule' => 'validateUnique', 'provider' => 'usuario']
+				// ])
+				->notEmpty('usuario_clave');
 
-			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
-			$persona = $this->Persona->patchEntity($persona, $this->request->data);
+			$errors = $validator->errors($this->request->data());
 
-			if(!$this->Persona->save($persona)) {
-				$this->Flash->error(__('Unable to add your enterprice.'));
+			if (!empty($errors)) {
+				$this->set('registrar', compact('errors'));
+				$this->Flash->error($errors);
+				return $this->redirect($this->referer());
+			} else {
+				$this->request->data['perfil_id'] = 1;
+				$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
+
+				$persona = $this->Persona->newEntity();
+
+				$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
+				$persona = $this->Persona->patchEntity($persona, $this->request->data);
+
+				if(!$this->Persona->save($persona)) {
+					$this->Flash->error(__('Unable to add your enterprice.'));
+				}
+
+				$personal = $this->Personal->newEntity();
+				$this->request->data['persona_id'] = $persona->id;
+				$personal = $this->Personal->patchEntity($personal, $this->request->data);
+
+				if(!$this->Personal->save($personal)) {
+					$this->Flash->error(__('Unable to add your enterprice.'));
+				}
+
+				$this->Flash->success(__('Usuario agregado con exito.'));
+	            return $this->redirect(['action' => 'index']);
 			}
-
-			$personal = $this->Personal->newEntity();
-			$this->request->data['persona_id'] = $persona->id;
-			$personal = $this->Personal->patchEntity($personal, $this->request->data);
-
-			if(!$this->Personal->save($personal)) {
-				$this->Flash->error(__('Unable to add your enterprice.'));
-			}
-
-			$this->request->data['tipo_usuario'] = 'E';
-			$this->request->data['personal_id'] = $personal->id;
-
-			$usuario = $this->Usuario->newEntity($this->request->data);
-			if(!$this->Usuario->save($usuario)) {
-				$this->Flash->error(__('Unable to add your enterprice.'));
-			}
-
-			$this->Flash->success(__('Usuario agregado con exito.'));
-            return $this->redirect(['action' => 'index']);
 		}
-		return $this->redirect(['action' => 'registrar']);
+		// return $this->redirect(['action' => 'registrar']);
 	}
 
 	public function registrar()
@@ -249,6 +273,22 @@ class UsuarioController extends AppController
 
 		$this->Flash->success('Usuario Editado exitosamente.');
 		return $this->redirect(['action' => 'index']);
+	}
+
+	public function addUserCredentials()
+	{
+		$this->request->data['tipo_usuario'] = 'E';
+		$this->request->data['perfil_id'] = 1;
+		$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
+		$this->request->data['usuario_clave'] = ( new DefaultPasswordHasher )->hash($this->request->data['usuario_clave']);
+		$usuario = $this->Usuario->newEntity($this->request->data);
+		if(!$this->Usuario->save($usuario)) {
+			$this->Flash->error(__('Unable to add your enterprice.'));
+		} else {
+			$this->Flash->success('Credenciales agregadas al usuario');
+		}
+
+		return $this->redirect($this->referer());
 	}
 
 	public function logout()

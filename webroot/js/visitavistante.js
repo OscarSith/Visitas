@@ -46,31 +46,4 @@
 		.on('hide.bs.modal', function() {
 			$(this).find('form [name=id]').val('');
 		});
-
-    $(".activar").on('click',function(e){
-
-    	var $tr = $(e.currentTarget).closest('tr');
-		var id=$tr.data('id');
-        bootbox.confirm("¿Esta seguro de actuvar esta visita?", function(result) {
-			if(result){				
-				$.ajax({
-			        'url': '/persona/activarvisita',
-			        'type': 'POST',
-			        'data': 'id='+$tr.data('id'),
-			        dataType: 'json'
-			    }).done(function(rec) {
-			    	bootbox.alert(rec.mensaje, function() {
-			    		window.location.reload();
-			    	});
-			    }).fail(function(xhr) {
-			        alert(xhr.responseJSON.message);
-			        console.log();
-			    }).always(function() {
-			        $inputs.prop('disabled', false);
-			    })
-			}
-				
-		});
-
-    });	
     

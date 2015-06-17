@@ -40,8 +40,6 @@ class PersonaController extends AppController
 		$this->loadModel('Visita');
 		$this->loadModel('Visitavisitante');
 
-		
-
 		if ($this->request->is('post')) {
 
 			if (empty($this->request->data['visitante_id'])) {
@@ -434,20 +432,20 @@ class PersonaController extends AppController
 								->set(['estado'=>'R'])
 								->where(['id' => $this->request->data['id']])
 								->execute();
-				
+
 				$data = json_encode(['mensaje' => 'Se activó la visita.']);	
-				$this->autoRender = false;				
+				$this->autoRender = false;
 			}else{
 				
 				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
-				$this->autoRender = false;				
-			}			
+				$this->autoRender = false;
+			}
 
-			echo $data;	
+			echo $data;
 
 		}else {
 			throw new BadRequestException();
-		}	
+		}
 	}
 
 }

@@ -42,15 +42,3 @@
 		</div>
 	</div>
 </div>
-<div class="form-group">
-	<div class="row">
-		<div class="col-sm-6">
-			<?php echo $this->Form->text('usuario_login', ['class' => 'form-control', 'placeholder' => 'Usuario Login', 'required']); ?>
-		</div>
-		<?php if ($route !== 'edit'): ?>
-			<div class="col-sm-6">
-				<?php echo $this->Form->password('usuario_clave', ['class' => 'form-control', 'placeholder' => 'Contraseña', 'required']); ?>
-			</div>
-		<?php endif ?>
-	</div>
-</div>
