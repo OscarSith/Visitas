@@ -4,7 +4,6 @@ namespace App\Controller;
 use Cake\Event\Event;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Routing\Router;
-use Cake\Validation\Validator;
 
 class UsuarioController extends AppController
 {
@@ -45,13 +44,13 @@ class UsuarioController extends AppController
 						['pl' => 'Personal'], ['p.id = pl.persona_id']
 					);
 
-		if (!empty($this->request->data['login_usuario'])) {
+		if (!empty($this->request->data['login_usuario'])) {			
 			$usuarios=$usuarios->where( ['usuario.usuario_login LIKE' => '%'.$this->request->data['login_usuario'].'%' ] );
 		}else{
 			$this->request->data['login_usuario']='';
 		}
 
-		if (!empty($this->request->data['nombre_usuario'])) {
+		if (!empty($this->request->data['nombre_usuario'])) {			
 			$usuarios=$usuarios->where( ['upper(p.persona_nombres) LIKE' => '%'.strtoupper($this->request->data['nombre_usuario']).'%' ] );
 		}else{
 			$this->request->data['nombre_usuario']='';
@@ -75,46 +74,91 @@ class UsuarioController extends AppController
 
 		if ($this->request->is('post')) {
 
-			if (empty($this->request->data['usuario_login']) || empty($this->request->data['usuario_clave'])) {
-				$this->Flash->error('El nombre usuario y la contraseña son requeridos');
-				return $this->redirect($this->referer());
-			}
-
 			$data = $this->Usuario->find()
     					->where(['usuario_login' => $this->request->data['usuario_login']])
     					->first();
+    		
     		if (is_null($data)) {
     			$this->Flash->error(__('Usuario o password incorrecto.'));
     			return $this->redirect($this->referer());
     		}
-
+    		
     		if ($data->tipo_usuario=='I'){
 
 			} else if ($data->tipo_usuario=='E') {
         		$user = $this->Auth->identify();
+
         		if ($user) {
+        			
 					$this->loadModel('Personal');
+					$this->loadModel('Serviciopersonal');
+
 					$personal = $this->Personal->find()
 									->where(['persona_id' => $data->persona_id])
 	    							->first();
+	    			
 	    			$this->request->session()->write('usuario.perfil', $data->perfil_id);
-	    			$this->request->session()->write('usuario.sede',   $personal->sede_id);
 	    			
-	    			$this->Auth->setUser($user);
-	    			if ( $data->perfil_id != 2) {
-	    				
-	    				$this->request->session()->write('usuario.organigrama', $personal->organigrama_id);
-	    				return $this->redirect('/dashboard');
-	    			}else {
+	    			$cant_serviciopersonal = $this->Serviciopersonal->find()
+											->where(['personal_id' => $personal->id])
+											->where(['estado' => 'A'])
+											->count();
 
-	    				$this->request->session()->write('usuario.organigrama', 1);
-	    				return $this->redirect('/persona');
-	    			}
-	    			
-				}else{
+					$this->request->session()->write('personal.codigo', $personal->id);
+
+					if( $cant_serviciopersonal==0 ){
+						
+						$this->Flash->error(__('El usuario no cuenta con una sede u organigrama asignado.'));
+
+					} else if ( $cant_serviciopersonal==1 ) {
+						
+						$serviciopersonal=$this->Serviciopersonal->find()
+												->select(['id','o.id','o.organigrama_nombre','c.id','c.cargo_nombre','s.id','s.sede_nombre'])
+												->innerJoin(
+													['o' => 'Organigrama'],
+													['serviciopersonal.organigrama_id = o.id']
+												)
+												->innerJoin(
+													['c' => 'cargo'],
+													['serviciopersonal.cargo_id = c.id']
+												)
+												->innerJoin(
+													['s' => 'sede'],
+													['serviciopersonal.sede_id = s.id']
+												)
+												->where(['serviciopersonal.personal_id' => $personal->id])
+												->where(['serviciopersonal.estado' => 'A'])->first();
+
+						$this->request->session()->write('usuario.sede',  $serviciopersonal->s['id']);
+						$this->request->session()->write('usuario.cargo', $serviciopersonal->c['id']);
+
+		    			$this->Auth->setUser($user);
+		    			
+		    			if ( $data->perfil_id == 2 ) {
+		    				
+		    				$this->request->session()->write('usuario.organigrama', 1);
+		    				return $this->redirect('/persona');		    				
+		    			}else if( $data->perfil_id == 1 ) {
+
+		    				$this->request->session()->write('usuario.organigrama', 1);	
+		    				return $this->redirect('/dashboard');
+		    			}else{
+		    				
+		    				$this->request->session()->write('usuario.organigrama', $serviciopersonal->organigrama_id);	
+		    				return $this->redirect('/dashboard');
+		    			}
+
+					}else{
+						
+						$this->Auth->setUser($user);
+						return $this->redirect('/serviciopersonal');
+					}	    			
+				} else {
+
 					$this->Flash->error(__('Clave incorrecta.'));
 				}
 			}else{
+
 				$this->Flash->error(__('Usted no posee cuenta de usuario.'));
 			}
 		}
@@ -126,57 +170,39 @@ class UsuarioController extends AppController
 		$this->loadModel('Personal');
 
 		if ($this->request->is('post')) {
-			$validator = new Validator();
+			$this->request->data['perfil_id'] = 1;
+			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
+			$this->request->data['usuario_clave']=(new DefaultPasswordHasher)->hash($this->request->data['usuario_clave']);
 
-			$validator
-			    ->notEmpty('persona_nombre', 'Mensaje personalizado')
-			    ->notEmpty('persona_apepat')
-		        ->notEmpty('persona_apemat')
-		        ->notEmpty('tipodocumento_id')
-		        ->notEmpty('documento_numero')
-		        ->notEmpty('organigrama_id')
-		        ->notEmpty('perfil_id')
-		        ->notEmpty('cargo_id')
-		        ->notEmpty('sede_id')
-		        ->notEmpty('usuario_login')
-		        // no funciona
-		  		//	->add('usuario_login', [
-				//     'unique' => ['rule' => 'validateUnique', 'provider' => 'usuario']
-				// ])
-				->notEmpty('usuario_clave');
+			$persona = $this->Persona->newEntity();
 
-			$errors = $validator->errors($this->request->data());
+			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
+			$persona = $this->Persona->patchEntity($persona, $this->request->data);
 
-			if (!empty($errors)) {
-				$this->set('registrar', compact('errors'));
-				$this->Flash->error($errors);
-				return $this->redirect($this->referer());
-			} else {
-				$this->request->data['perfil_id'] = 1;
-				$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
-
-				$persona = $this->Persona->newEntity();
-
-				$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' .$this->request->data['persona_apepat']. ' ' .$this->request->data['persona_apemat'];
-				$persona = $this->Persona->patchEntity($persona, $this->request->data);
-
-				if(!$this->Persona->save($persona)) {
-					$this->Flash->error(__('Unable to add your enterprice.'));
-				}
-
-				$personal = $this->Personal->newEntity();
-				$this->request->data['persona_id'] = $persona->id;
-				$personal = $this->Personal->patchEntity($personal, $this->request->data);
-
-				if(!$this->Personal->save($personal)) {
-					$this->Flash->error(__('Unable to add your enterprice.'));
-				}
-
-				$this->Flash->success(__('Usuario agregado con exito.'));
-	            return $this->redirect(['action' => 'index']);
+			if(!$this->Persona->save($persona)) {
+				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
+
+			$personal = $this->Personal->newEntity();
+			$this->request->data['persona_id'] = $persona->id;
+			$personal = $this->Personal->patchEntity($personal, $this->request->data);
+
+			if(!$this->Personal->save($personal)) {
+				$this->Flash->error(__('Unable to add your enterprice.'));
+			}
+
+			$this->request->data['tipo_usuario'] = 'E';
+			$this->request->data['persona_id'] = $persona->id;
+
+			$usuario = $this->Usuario->newEntity($this->request->data);
+			if(!$this->Usuario->save($usuario)) {
+				$this->Flash->error(__('Unable to add your enterprice.'));
+			}
+
+			$this->Flash->success(__('Usuario agregado con exito.'));
+            return $this->redirect(['action' => 'index']);
 		}
-		// return $this->redirect(['action' => 'registrar']);
+		return $this->redirect(['action' => 'registrar']);
 	}
 
 	public function registrar()
@@ -198,15 +224,15 @@ class UsuarioController extends AppController
 	public function edit($id)
 	{
 		$usuario = $this->Usuario->find()
-					->select(['id', 'usuario_login', 'personal_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero', 'p.tipodocumento_id', 'pl.cargo_id', 'pl.sede_id', 'pl.organigrama_id','perfil_id'])
+					->select(['id', 'usuario_login', 'pl.personal_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero', 'p.tipodocumento_id', 'pl.cargo_id', 'pl.sede_id', 'pl.organigrama_id','perfil_id'])
 					->join([
-						'table' => 'Personal',
-						'alias' => 'pl',
+						'table' => 'Persona',
+						'alias' => 'p',
 						'type' => 'inner',
-						'conditions' => 'pl.id = usuario.personal_id'
+						'conditions' => 'p.id = usuario.persona_id'
 					])
 					->innerJoin(
-						['p' => 'Persona'], ['p.id = pl.persona_id']
+						['pl' => 'Personal'], ['p.id = pl.persona_id']
 					)
 					->where(['usuario.id' => $id])
 					->first();
@@ -273,22 +299,6 @@ class UsuarioController extends AppController
 
 		$this->Flash->success('Usuario Editado exitosamente.');
 		return $this->redirect(['action' => 'index']);
-	}
-
-	public function addUserCredentials()
-	{
-		$this->request->data['tipo_usuario'] = 'E';
-		$this->request->data['perfil_id'] = 1;
-		$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
-		$this->request->data['usuario_clave'] = ( new DefaultPasswordHasher )->hash($this->request->data['usuario_clave']);
-		$usuario = $this->Usuario->newEntity($this->request->data);
-		if(!$this->Usuario->save($usuario)) {
-			$this->Flash->error(__('Unable to add your enterprice.'));
-		} else {
-			$this->Flash->success('Credenciales agregadas al usuario');
-		}
-
-		return $this->redirect($this->referer());
 	}
 
 	public function logout()

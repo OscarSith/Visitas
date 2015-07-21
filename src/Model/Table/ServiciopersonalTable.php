@@ -2,11 +2,10 @@
 
 use Cake\ORM\Table;
 
-class VisitaTable extends Table
+class ServiciopersonalTable extends Table
 {
 	public function initialize(array $config)
 	{
 		$this->addBehavior('Timestamp');
 	}
-
 }

@@ -1,3 +1,4 @@
+<?= $this->Html->script('visita') ?>
 		<p class="login-box-msg">Ingrese sus datos de usuario</p>
 			<?php echo $this->Form->create() ?>
 				<div class="form-group has-feedback">

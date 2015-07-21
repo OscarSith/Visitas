@@ -54,7 +54,7 @@
 			<tbody>
 				<?php $n = 1;
 				foreach ($visitas as $key): ?>
-					<tr data-id="<?php echo $key->id ?>">
+					<tr data-id="<?php echo $key->vv['id'] ?>">
 						<td><?php echo $key->pr['persona_nombres']?></td>
 						<td><?php echo $key->pe['persona_nombres'] ?></td>
 						<td><?php echo $key->visita_fecha ?></td>
@@ -88,7 +88,7 @@
 							  	<?php elseif ($key->vv['estado'] =='D') : ?>
 							  		<li><a href="#modal-horasalida" data-toggle="modal">Hora Salida</a></li>
 							  	<?php elseif ($key->vv['estado'] =='A') : ?>
-							  		<li><a href="#" class="activar" data-toggle="modal">Activar</a></li>
+							  		<li><a href="#modal-confirm-activar" class="activar" data-toggle="modal">Activar</a></li>
 							  	<?php endif ?>
 							  </ul>
 							</div>
@@ -150,7 +150,7 @@
 				<div class="row">
 					<label for="" class="control-label col-sm-4">Hora Ingreso</label>
 					<div class="col-sm-8">
-						<input type="text" class="form-control" name="visita_horaingreso" id="visita_horaingreso"/>
+						<input type="text" class="form-control" name="visita_horaingreso" id="Visita_horaingreso">
 					</div>
 				</div>
 			</div>
@@ -177,6 +177,27 @@
 		<?php echo $this->Form->create(null , ['action' => 'anularvisita']) ?>
 			<input type="hidden" name="id" value="">
 			<p>¿Esta seguro de anular esta visita?</p>
+			<div class="text-right">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+	        	<button class="btn btn-primary">Aceptar</button>
+			</div>
+		<?php echo $this->Form->end() ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-confirm-activar">
+  <div class="modal-dialog" style="z-index:2000">
+    <div class="modal-content">
+      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title"><i class="fa fa-warning text-warning fa-lg fa-fw"></i>Advertencia</h4>
+	</div>
+	<div class="modal-body">
+		<?php echo $this->Form->create(null , ['action' => 'activarvisita']) ?>
+			<input type="hidden" name="id" value="">
+			<p>¿Esta seguro de activar esta visita?</p>
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 	        	<button class="btn btn-primary">Aceptar</button>
@@ -239,7 +260,7 @@
 				<div class="row">
 					<label for="" class="control-label col-sm-4">Hora Salida</label>
 					<div class="col-sm-8">
-						<input type="text" class="form-control" name="visita_horasalida" id="visita_horasalida"/>
+						<input type="text" class="form-control" name="visita_horasalida" id="visita_horasalida">
 					</div>
 				</div>
 			</div>

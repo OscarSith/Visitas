@@ -23,12 +23,18 @@ class VisitaController extends AppController
 		$visita = $Table->find()->where(['id'=> $id])->first();
 		
 		$personal = $this->Personal->find()
-			->select(['id','persona_id','cargo_id', 'p.tipodocumento_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero'])
+			->select(['id','persona_id','s.cargo_id', 'p.tipodocumento_id', 'p.persona_nombre', 'p.persona_apepat', 'p.persona_apemat', 'p.documento_numero'])
+			->innerJoin(
+				['s' => 'Serviciopersonal'],
+				['Personal.id = s.personal_id']
+			)
 			->innerJoin(
 				['p' => 'Persona'],
 				['persona_id = p.id']
 			)
 			->where(['Personal.id' => $visita->personal_id ])
+			->where(['s.organigrama_id' => $visita->organigrama_id ])
+			->where(['s.sede_id' => $visita->sede_id ])
 			->first();
 
 		$visitantes = $this->Visitavisitante->find()
@@ -42,7 +48,7 @@ class VisitaController extends AppController
 					['persona_id = p.id']
 				)
 				->where(['Visitavisitante.visita_id' => $id])
-				->where(['Visitavisitante.estado IS NOT' => 'A'])
+				->where(['Visitavisitante.estado !=' => 'A'])
 				->all();
 
 		$title = 'Editar Visita';
@@ -100,6 +106,7 @@ class VisitaController extends AppController
 							['o' => 'Organigrama'],
 							['v.organigrama_id = o.id']
 				)
+				->where(['Visitavisitante.estado !=' => 'A'])
 				->group('o.id');
 		
 		$this->autoRender = false;
@@ -107,7 +114,8 @@ class VisitaController extends AppController
 		echo json_encode($visita);		
 	}
 
-	public function visitantesbyestado(){		
+	public function visitantesbyestado(){
+
 		$this->loadModel('Visitavisitante');
 		$visita = $this->Visitavisitante->find();		 
 		$visita->select(['count' => $visita->func()->count('*'), 'estado'])
@@ -158,7 +166,9 @@ class VisitaController extends AppController
 			->innerJoin(
 				['pr' => 'Persona'],
 				['pl.persona_id = pr.id']
-			);
+			)
+			->where(['vv.estado IS NOT' => 'A']);
+
 
 		$this->autoRender = false;
 		$a = array();
@@ -171,8 +181,14 @@ class VisitaController extends AppController
 			$hora_i;
 			$hora_f;
 			if( $tipo=='PM' ){
-				$hora_i=($hora+12).':'.$min.':00';
-				$hora_f=($hora+12+2).':'.$min.':00';
+				if($hora==12){
+					$hora_i=($hora).':'.$min.':00';
+					$hora_f=($hora+2).':'.$min.':00';	
+				}else{
+					$hora_i=($hora+12).':'.$min.':00';
+					$hora_f=($hora+12+2).':'.$min.':00';	
+				}
+				
 			}else{
 				$hora_i=($hora).':'.$min.':00';
 				$hora_f=($hora+2).':'.$min.':00';

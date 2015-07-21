@@ -122,7 +122,7 @@
 			<div class="row">
 				<label for="" class="control-label col-sm-2">Cargo</label>
 				<div class="col-sm-8">
-					<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control', 'default' => $personal->cargo_id]) ?>
+					<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control', 'default' => $personal->s['cargo_id']]) ?>
 				</div>
 			</div>
 		</div>

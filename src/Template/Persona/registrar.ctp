@@ -1,4 +1,4 @@
-<h1>Registrar persona</h1>
+	<h1>Registrar persona</h1>
 <?php
 	echo $this->Form->create($persona);
 	echo '<input type="hidden" name="fecha_creacion" value="'.date('Y-m-d').'">';

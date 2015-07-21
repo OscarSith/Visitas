@@ -4,7 +4,7 @@
 			<h3 class="panel-title">Registrar</h3>
 		</div>
 		<div class="panel-body">
-			<?php echo $this->Form->create($usuario, ['action' => 'add', 'novalidate']); ?>
+			<?php echo $this->Form->create($usuario, ['action' => 'add']); ?>
 			<?php include 'fields.ctp'; ?>
 			<?php echo $this->Form->button(__('Grabar'), ['class' => 'btn btn-primary']); ?>
 			<?php echo $this->Form->end(); ?>

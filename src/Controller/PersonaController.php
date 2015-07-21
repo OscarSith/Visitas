@@ -47,25 +47,21 @@ class PersonaController extends AppController
 				return $this->redirect(['action' => 'index']);
 			}
 
+			if (empty($this->request->data['personal_id']) || $this->request->data['personal_id'] == '') {
+				$this->Flash->error(__('Debe seleccionar a un servidor público.'));
+				return $this->redirect(['action' => 'index']);	
+			}	
 			$this->request->data['fecha_creacion'] = date('Y-m-d');
 			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
 			$this->request->data['visita_fecha'] = $this->request->data['visita_fecha'];
 			$this->request->data['visita_horaprogramada'] = $this->request->data['visita_horaprogramada'];
 			$this->request->data['persona_nombres'] = $this->request->data['persona_nombre'] . ' ' . $this->request->data['persona_apepat'];
 			$this->request->data['organigrama_id'] = $this->request->data['hdnorganigrama_id'];
+			$this->request->data['sede_id'] =  $this->request->session()->read('usuario.sede');
+			$this->request->data['visita_date'] = $this->request->data['visita_fecha'];
 
-			if (empty($this->request->data['personal_id']) || $this->request->data['personal_id'] == '') {
-				$this->request->data['sede_id'] = 1;
-				$persona = $this->Persona->newEntity($this->request->data);
-				$this->Persona->save($persona);
-
-				$this->request->data['persona_id'] = $persona->id;
-				$personal = $this->Personal->newEntity($this->request->data);
-				$this->Personal->save($personal);
-				$this->request->data['personal_id'] = $personal->id;
-			}
 			$visita = $this->Visita->newEntity($this->request->data);
-
+			
 			$this->Visita->save($visita);
 			$this->request->data['visita_id'] = $visita->id;
 			$visitantes_id = $this->request->data['visitante_id'];
@@ -87,10 +83,11 @@ class PersonaController extends AppController
 			
 			$this->loadComponent('RequestHandler');
 			$this->loadModel('Visitante');
-			$this->request->data['usuario_creador'] = 'Admin';
-			$nombre=$this->request->data['persona_nombre'];
-			$apellido=$this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
-
+			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
+			$nombre = $this->request->data['persona_nombre'];
+			$apellido = $this->request->data['persona_apepat']. ' ' . $this->request->data['persona_apemat'];
+			
+			$codigoPersona = $this->request->data['persona_id'];
 
 			if (empty($this->request->data['persona_id'])) {
 			
@@ -100,8 +97,9 @@ class PersonaController extends AppController
 				$this->Persona->save($persona);
 
 				$this->request->data['persona_id'] = $persona->id;
+				$codigoPersona = $persona->id;
 			}	
-
+			
 			if (empty($this->request->data['visitante_id']) ) {
 
 				$visitante = $this->Visitante->newEntity($this->request->data);
@@ -137,15 +135,20 @@ class PersonaController extends AppController
 
 			}
 			
-			if( empty($this->request->data['empresavisitante_id']) ){
-				if(!empty( $this->request->data['empresa_id']) ){
-					$this->loadModel('Empresavisitantes');
-					$empresavisitantes = $this->Empresavisitantes->newEntity($this->request->data);
-					$this->Empresavisitantes->save($empresavisitantes);		
+			if( empty($this->request->data['personal_emp_id']) ){
+				
+				if(!empty( $this->request->data['empresa_id']) && !empty( $this->request->data['visitante_id'])){
+					
+					$this->loadModel('Personal');
+					
+					$this->request->data['persona_id'] = $codigoPersona;
+					$personal = $this->Personal->newEntity($this->request->data);
+					
+					$this->Personal->save($personal);
 				} 				
 			}
 
-
+			$this->Flash->error(__('Petición no encontrada'));			
 			
 			$data = json_encode([
 				'id' => $this->request->data['visitante_id'],
@@ -167,6 +170,7 @@ class PersonaController extends AppController
 		$this->loadModel('Visitavisitante');
 		$this->loadModel('Visita');
 		$this->loadModel('Visitante');
+		
 		$visitas = $this->Visita->find()
 			->select(['id', 'vv.id', 'pr.persona_nombres', 'pe.persona_nombres', 'visita_fecha', 'visita_horaprogramada','vv.estado','vv.visita_horaingreso','vv.visita_horasalida'])
 			->innerJoin(
@@ -238,9 +242,10 @@ class PersonaController extends AppController
 
 	public function show($id)
 	{
+		$codOrganigrama=$this->request->session()->read('usuario.organigrama');
 		$data = $this->Persona
 				->find()
-				->select(['p.id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero', 'p.cargo_id','p.organigrama_id'])
+				->select(['p.id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero', 's.cargo_id','s.organigrama_id'])
 				->join([
 					'p' => [
 						'table' => 'personal',
@@ -248,7 +253,15 @@ class PersonaController extends AppController
 						'conditions' => 'persona.id = p.persona_id'
 					]
 				])
+				->join([
+					's' => [
+						'table' => 'serviciopersonal',
+						'type' => 'inner',
+						'conditions' => 'persona.id = p.persona_id'
+					]
+				])
 				->where(['p.id = ' => $id])
+				->where(['s.organigrama_id = ' => $codOrganigrama])
 				->first();
 
 		$this->toJson($data);
@@ -256,7 +269,8 @@ class PersonaController extends AppController
 
 	public function showByVisitanteId($id)
 	{
-		$this->loadModel('Empresavisitantes');
+		$this->loadModel('Personal');
+		
 		$data = $this->Persona
 				->find()
 				->select(['v.id', 'id', 'persona_nombre', 'persona_apepat', 'persona_apemat', 'persona_nombres', 'tipodocumento_id', 'documento_numero'])
@@ -266,25 +280,25 @@ class PersonaController extends AppController
 				)
 				->where(['persona.id = ' => $id])
 				->first();
+		if( !empty( $data->id ) ){
 
-		if( !empty( $data->v['id'] ) ){
-
-			$data2 = $this->Empresavisitantes
+			$data2 = $this->Personal
 				->find()
 				->select(['id', 'empresa_id', 'p.persona_nombres', 'p.documento_numero'])
 				->innerJoin(
 					['e' => 'empresa'],
-					['empresavisitantes.empresa_id = e.id']
+					['personal.empresa_id = e.id']
 				)
 				->innerJoin(
 					['p' => 'persona'],
 					['p.id = e.persona_id']
 				)
-				->where(['visitante_id =' => $data->v['id'] ])
+				->where(['personal.persona_id =' => $id ])
 				->first();
 		}else{
 			$data2 = $this->Empresavisitantes;
 		}
+
 		$this->toJson($data, false, $data2, true);
 	}
 
@@ -311,7 +325,7 @@ class PersonaController extends AppController
 				->select(['data' => 'id', 'value' => 'persona_nombres'])
 				->where(['documento_numero LIKE' => '%'.$this->request->query['query'].'%'])
 				->where(['tipo_persona' => 'N']);
-			// debug($data);
+
 		$this->toJson($data, true);
 	}
 
@@ -363,6 +377,7 @@ class PersonaController extends AppController
 
 	public function registrarHoraInreso()
 	{
+		
 		if ($this->request->is('post')) {
 			$this->loadModel('Visitavisitante');
 
@@ -422,30 +437,23 @@ class PersonaController extends AppController
 
 	public function activarvisita()
 	{				
-		if ($this->request->is('ajax')) {
-			$this->loadComponent('RequestHandler');
-			$this->loadModel('Visitavisitante');
-			$data;
-			if (!empty($this->request->data['id'])) {
-				$visitante = $this->Visitavisitante->query()
-								->update()
-								->set(['estado'=>'R'])
-								->where(['id' => $this->request->data['id']])
-								->execute();
 
-				$data = json_encode(['mensaje' => 'Se activó la visita.']);	
-				$this->autoRender = false;
-			}else{
-				
-				$data = json_encode(['mensaje' => 'Los datos enviados son incorrectos.']);	
-				$this->autoRender = false;
-			}
-
-			echo $data;
-
-		}else {
-			throw new BadRequestException();
+		$this->loadComponent('RequestHandler');
+		$this->loadModel('Visitavisitante');
+			
+		if (!empty($this->request->data['id'])) {
+			$visitante = $this->Visitavisitante->query()
+							->update()
+							->set(['estado'=>'R'])
+							->where(['id' => $this->request->data['id']])
+							->execute();
+			
+			$this->Flash->success('Se activo la visita exitosamente');
+		} else {
+			$this->Flash->error('Los datos enviados son incorrectos.');
 		}
+		
+		$this->redirect($this->referer());
 	}
 
 }

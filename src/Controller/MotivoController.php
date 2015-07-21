@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use Cake\Event\Event;
+use Cake\Validation\Validator;
 
 class MotivoController extends AppController
 {
@@ -25,7 +26,6 @@ class MotivoController extends AppController
 		$title = 'Motivos';
 		$titleP = 'Mantenimientos';
 		$authUser = $this->Auth->user('usuario_login');
-
 		$estados = $this->getDefaultCombosMantenimiento();
 
 		$motivos = $this->Motivo->find();
@@ -52,8 +52,8 @@ class MotivoController extends AppController
 	}
 
 	public function registrar(){
+		
 		$motivo = $this->Motivo->newEntity();
-
 		$titleP = 'Mantenimiento';
 		$title = 'Motivo';
 		$authUser = $this->Auth->user('usuario_login');
@@ -66,19 +66,17 @@ class MotivoController extends AppController
 		if ($this->request->is('post')) {
 
 			$this->request->data['usuario_creador'] = $this->Auth->user('usuario_login');
-			
+
 			$motivo = $this->Motivo->newEntity($this->request->data);
 			$this->Motivo->save($motivo);
 
 			return $this->redirect(['action' => 'index']);
-		}	
+		}
 	}
 
 	public function editar()
 	{
 		$this->loadModel('Motivo');
-		
-		
 		$this->request->data['usuario_actualiza'] = $this->Auth->user('usuario_login');
 		
 		$this->Motivo->query()->update()

@@ -13,16 +13,15 @@
 					<div class="row">
 						<label class="control-label col-sm-2">Motivo</label>
 						<div class="col-sm-4">
-							<?php echo $this->Form->text('motivo_descripcion', ['class' => 'form-control']) ?>
+							<?php echo $this->Form->text('motivo_descripcion', ['class' => 'form-control', 'minlength' => '2', 'required']) ?>
 						</div>
 					</div>
 				</div>
 				<div class="form-group">
-
 					<div class="row">
                     	<label class="control-label col-sm-2">Color picker with addon:</label>
                     	<div class="col-sm-4">
-                    		<input type="text" class="form-control" id="motivo_color" name="motivo_color" />
+                    		<input type="text" class="form-control" id="motivo_color" name="motivo_color" required>
                     	</div>
                     </div>	
                 </div>
@@ -36,4 +35,4 @@
 		
 		<br><br>
 	</div>
-	<?php echo $this->Form->end() ?>	
+	<?php echo $this->Form->end() ?>

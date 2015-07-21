@@ -34,7 +34,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Lugar de reunión</label>
 						<div class="col-sm-4">
-			        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control', 'empty' => 'Seleccione']) ?>
+			        		<?php echo $this->Form->select('lugar_id', $lugares, ['class' => 'form-control chosen-select', 'empty' => 'Seleccione']) ?>
 						</div>
 					</div>
 		        </div>
@@ -42,7 +42,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Motivo de reunión</label>
 						<div class="col-sm-4">
-			        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control','empty' => 'Seleccione']) ?>
+			        		<?php echo $this->Form->select('motivo_id', $motivos, ['class' => 'form-control chosen-select','empty' => 'Seleccione']) ?>
 						</div>
 					</div>
 		        </div>
@@ -57,7 +57,7 @@
 					<div class="row">
 						<label class="control-label col-sm-2">Organigrama</label>
 						<div class="col-sm-4">
-							<?php echo $this->Form->select('organigrama_id', $organigramas, ['class' => 'form-control organigrama_cbo', 'id' => 'organigrama_id']) ?>
+							<?php echo $this->Form->select('organigrama_id', $organigramas, ['class' => 'form-control organigrama_cbo chosen-select', 'id' => 'organigrama_id']) ?>
 						</div>
 					</div>
 				</div>
@@ -87,7 +87,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Tipo Documento</label>
 						<div class="col-sm-8">
-							<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control']) ?>
+							<?php echo $this->Form->select('tipodocumento_id', $documentos, ['class' => 'form-control chosen-select']) ?>
 						</div>
 					</div>
 				</div>
@@ -127,7 +127,7 @@
 					<div class="row">
 						<label for="" class="control-label col-sm-2">Cargo</label>
 						<div class="col-sm-8">
-							<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control']) ?>
+							<?php echo $this->Form->select('cargo_id', $cargos, ['class' => 'form-control chosen-select']) ?>
 						</div>
 					</div>
 				</div>
@@ -172,6 +172,9 @@
 				<h4 class="modal-title">Registra Visitante</h4>
 			</div>
 		<div class="modal-body">
+			<div class="alert alert-warning" id="mensaje-registro-visitante" style="display	:none;">
+				Este persona se encuentra registrada como personal de la institución.
+			</div>
 			<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
 			<input type="hidden" name="visitante_id" value="">
 			<input type="hidden" name="persona_id" value="">
@@ -236,7 +239,7 @@
 				</div>
 			</div>
 			<div class="panel panel-default">
-				<input type="hidden" name="empresavisitante_id" value="">
+				<input type="hidden" name="personal_emp_id" value="">
 				<div class="panel-heading"><h4 class="panel-title">Datos de la empresa</h4></div>
 				<div class="panel-body">
 					<input type="hidden" name="empresa_id">
@@ -263,7 +266,7 @@
 		<div class="modal-footer">			
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				<button class="btn btn-primary">Guardar</button>
+				<button class="btn btn-primary" id="btn-visitante">Guardar</button>
 			</div>
 		</div>	
 			<?php echo $this->Form->end() ?>

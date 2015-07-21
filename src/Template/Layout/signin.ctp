@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>                                                 
 <html lang="es">
 <head>
     <meta charset="utf-8">
@@ -11,6 +11,7 @@
     <?= $this->Html->css('../bower_components/fontawesome/css/font-awesome.min.css') ?>
     <?= $this->Html->css('dist/AdminLTE.css') ?>
     <?= $this->Html->css('dist/skins/_all-skins.min.css') ?>
+
 </head>
 <body class="login-page">
     <div class="login-box">
@@ -21,13 +22,5 @@
         <?= $this->fetch('content') ?>
       </div>
     </div>
-    <script>
-		var form = document.getElementsByTagName('form')[0];
-		form.addEventListener('submit', function(){
-			var btn = document.getElementById('btn-sign-in');
-			btn.innerHTML = '<i class="fa fa-refresh fa-spin"></i> Ingresando...';
-			btn.disabled = true;
-		});
-	</script>
 </body>
 </html>

@@ -13,6 +13,7 @@
     <?= $this->Html->css('bootstrap-timepicker.min.css') ?>
     <?= $this->Html->css('../bower_components/fullcalendar/dist/fullcalendar.min.css') ?>
     <?= $this->Html->css('bootstrap-colorpicker.min.css') ?>
+    <?= $this->Html->css('chosen.css') ?>
     <?php $codPerfil = $this->request->session()->read('usuario.perfil'); ?>
   </head>
   <body class="skin-red sidebar-mini">
@@ -160,9 +161,38 @@
         </div>
         <strong>Copyright &copy; 2015 <a class="red" href="http://onagi.gob.pe">ONAGI - Oficina Nacional de Gobierno Interior</a>.</strong> Todos los derechos reservados.
       </footer>
-      
-      
-    <?= $this->Html->script('../bower_components/jquery/dist/jquery.min') ?>
+    <?= $this->Html->script('../bower_components/jquery/dist/jquery.min') ?> 
+    <?= $this->Html->script('jquery.validate.min.js') ?>
+    <script>
+      $.extend(jQuery.validator.messages, {
+        required: "Este campo es obligatorio.",
+        remote: "Por favor, rellena este campo.",
+        email: "Por favor, escribe una dirección de correo válida",
+        url: "Por favor, escribe una URL válida.",
+        date: "Por favor, escribe una fecha válida.",
+        dateISO: "Por favor, escribe una fecha (ISO) válida.",
+        number: "Por favor, escribe un número entero válido.",
+        digits: "Por favor, escribe sólo dígitos.",
+        creditcard: "Por favor, escribe un número de tarjeta válido.",
+        equalTo: "Por favor, escribe el mismo valor de nuevo.",
+        accept: "Por favor, escribe un valor con una extensión aceptada.",
+        maxlength: jQuery.validator.format("Por favor, no escribas más de {0} caracteres."),
+        minlength: jQuery.validator.format("Por favor, no escribas menos de {0} caracteres."),
+        rangelength: jQuery.validator.format("Por favor, escribe un valor entre {0} y {1} caracteres."),
+        range: jQuery.validator.format("Por favor, escribe un valor entre {0} y {1}."),
+        max: jQuery.validator.format("Por favor, escribe un valor menor o igual a {0}."),
+        min: jQuery.validator.format("Por favor, escribe un valor mayor o igual a {0}.")
+      });
+      var validateOptions = {
+        errorClass: 'text-danger',
+        errorPlacement: function(error, elem) {
+          $(elem).parent().addClass('has-error').append(error);
+        },
+        success: function(e) {
+          $(e).parent().removeClass('has-error').addClass('has-success');
+        }
+      };
+    </script>
     <!-- Bootstrap 3.3.2 JS -->
 	  <?= $this->Html->script('../bower_components/bootstrap/dist/js/bootstrap.min') ?>
     <!-- AdminLTE App -->
@@ -176,12 +206,15 @@
     <?= $this->Html->script('bootstrap-datepicker.es') ?>
     <?= $this->Html->script('bootstrap-timepicker') ?>    
     <?= $this->Html->script('bootstrap-colorpicker.min') ?>
-    <?= $this->Html->script('jquery.canvasjs.min') ?>
-    <?= $this->Html->script('excanvas') ?>
+    <?= $this->Html->script('chosen.jquery.min') ?>    
+    
     <?= $this->Html->script('registroVisita') ?>
     <?= $this->Html->script('visita') ?>
     <?= $this->Html->script('visitavistante') ?>
     <?= $this->Html->script('motivo') ?>
+
+    <?= $this->Html->script('jquery.canvasjs.min') ?>
+    <?= $this->Html->script('excanvas') ?>
     <script type="text/javascript">
     $('#calendar').fullCalendar({
             header: {
@@ -195,33 +228,33 @@
         events: '/visita/getvisitas'
     });
 
-      var dataEstado = [];
+    var dataEstado = [];
         $.getJSON("/visita/visitantesbyestado", function (data) {
           var contvisitas=0;
             for (var i = 0; i <= data.length -1; i++) {
               var estado= ( data[i].estado=='R' ) ? 'Registrado': ( data[i].estado=='F' )? 'Finalizado': ( data[i].estado=='D' )? 'En Desarrollo':( data[i].estado=='A' )? 'Anulado':'Si definir';
               contvisitas=contvisitas+data[i].count;
-              dataEstado.push({ label: estado, y: parseInt(data[i].count) });
-            }
-            var chart = new CanvasJS.Chart("barContainer", {
-                theme: "theme1",//theme1
-                title: {
-                    text: "Visitas por Estado"
+             dataEstado.push({ label: estado, y: parseInt(data[i].count) });
+           }
+           var chart = new CanvasJS.Chart("barContainer", {
+               theme: "theme1",//theme1
+               title: {
+                   text: "Visitas por Estado"
                 },
                 legend: { text: "Visitas" },
                 // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
                 data: [ {                    
-                          type: "doughnut",
-                          dataPoints: dataEstado
-                        }
-                    ]
-            });
-            chart.render();
-        });
-      var dataOficina = [];
-        $.getJSON("/visita/visitantesbyoficina", function (data) {
-            for (var i = 0; i <= data.length -1; i++) {
-                dataOficina.push({ label: data[i].o.organigrama_nombre, y: parseInt(data[i].count) });
+                         type: "doughnut",
+                         dataPoints: dataEstado
+                       }
+                   ]
+           });
+           chart.render();
+       });
+     var dataOficina = [];
+       $.getJSON("/visita/visitantesbyoficina", function (data) {
+           for (var i = 0; i <= data.length -1; i++) {
+               dataOficina.push({ label: data[i].o.organigrama_nombre, y: parseInt(data[i].count) });
             }
             var chart = new CanvasJS.Chart("pieContainer", {
                 theme: "theme1",//theme1
@@ -236,29 +269,8 @@
                     ]
             });
             chart.render();
-        });
-      $('#inputSearchPerson').autocomplete({
-        serviceUrl: '/persona/search',
-        minChars: 3,
-        onSelect: function(suggestion) {
-          var $this = $(this),
-              flag = $this.data('exec');
+        });  
 
-          $this.closest('form').children('[name=persona_id]').val(suggestion.data);
-          $this.val( suggestion.value );
-          if (!flag) {
-              $this.prop('readonly', true).next().removeClass('visibility-hidden');
-              $this.data('exec', true);
-          }
-        }
-      });
-      $('#frm-add-user-credentials').on('click', '.btn-remove-text-autoc', function(e) {
-        e.preventDefault();
-            var $this = $(this);
-            var $text = $this.parent().addClass('visibility-hidden').prev().prop('readonly', false).focus();
-            $this.closest('form').children('[name=persona_id]').val('').end().find('#inputSearchPerson').val('');
-            $text.data('exec', false);
-      });
   </script>
   </body>
 </html>

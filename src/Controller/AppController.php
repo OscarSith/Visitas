@@ -77,7 +77,7 @@ class AppController extends Controller
             'valueField' => 'lugar_nombre'
         ])
         ->where(['sede_id' => $this->request->session()->read('usuario.sede')]);
-
+        
         $motivos = $this->Motivo->find('list',  [
             'keyField' => 'id',
             'valueField' => 'motivo_descripcion'

@@ -11,9 +11,9 @@
 				<div class="col-sm-3">
 					Estado
 				</div>
-				<div class="col-sm-3">					
+				<div class="col-sm-3">
 				</div>
-				<div class="col-sm-3">					
+				<div class="col-sm-3">
 				</div>
 			</div>		
 			<div class="row">
@@ -94,31 +94,25 @@
 		<h4 class="modal-title">Editar Motivo</h4>
 	</div>
 	<div class="modal-body">
-		<?php echo $this->Form->create($motivos , ['action' => 'editar', 'id' => 'frm-editar']) ?>
+		<?php echo $this->Form->create($motivos , ['action' => 'editar', 'class' => 'form-horizontal', 'id' => 'frm-editar']) ?>
 			<input type="hidden" name="id" value="">
 			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Motivo</label>
-					<div class="col-sm-8">
-						<?php echo $this->Form->text('motivo_descripcion', ['class' => 'form-control']) ?>
-					</div>
+				<label for="" class="control-label col-sm-3">Motivo</label>
+				<div class="col-sm-9">
+					<?php echo $this->Form->text('motivo_descripcion', ['class' => 'form-control', 'minlength' => '2', 'required']) ?>
 				</div>
 			</div>
-
 			<div class="form-group">
-				<div class="row">
-					<label for="" class="control-label col-sm-4">Motivo</label>
-					<div class="col-sm-8">
-						<input type="text" class="form-control" id="motivo_colorupd" name="motivo_color" />
-					</div>
+				<label for="" class="control-label col-sm-3">Color</label>
+				<div class="col-sm-3">
+					<input type="text" class="form-control" id="motivo_colorupd" name="motivo_color" required>
 				</div>
 			</div>
-
+			<hr>
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 	        	<button class="btn btn-primary">Guardar</button>
 			</div>
-
 		<?php echo $this->Form->end() ?>
       </div>
     </div>

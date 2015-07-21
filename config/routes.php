@@ -78,6 +78,11 @@ Router::scope('/', function ($routes) {
                     ['controller' => 'visita', 'action' => 'show'],
                     ['pass' => ['id'] ]
         );
+
+    Router::connect('usuario/getCredentials/:persona_id',
+                    ['controller' => 'usuario', 'action' => 'getCredentials'],
+                    ['pass' => ['persona_id'] ]
+        );
     
 });
 
