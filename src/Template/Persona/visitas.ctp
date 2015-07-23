@@ -27,9 +27,9 @@
 					<input type="text" class="form-control" name="visita_personal" id="Visitavisita_personal" placeholder="Funcionario" maxlength="10" value="<?= $valores['visita_personal'];?>"/>
 				</div>
 				<div class="col-sm-3">
-					<?php echo $this->Form->button(__('Enviar'), ['class' => 'btn btn-danger']); ?>			
+					<?php echo $this->Form->button(__('Enviar'), ['class' => 'btn btn-danger']); ?>
 				</div>
-			</div>		
+			</div>
 		</div>
 	</div>
 
@@ -81,7 +81,7 @@
 							<div class="btn-group">
 							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
 							  <ul class="dropdown-menu dropdown-menu-right" role="menu">
-							  		<li><a href="/visita-edit/<?php echo $key->id ?>">Editar</a></li>
+							  		<li><?php echo $this->Html->link('Editar', '/visita-edit/' . $key->id, ['escape' => false]) ?></li>
 							  	<?php if ($key->vv['estado'] =='R'): ?>
 							  		<li><a href="#modal-horaingreso" data-toggle="modal">Hora Inicio</a></li>
 							  		<li><a href="#modal-confirm-anular" class="anular" data-toggle="modal">Anular</a></li>

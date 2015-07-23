@@ -147,7 +147,7 @@ function getData (id, obj) {
 
             $inputs.prop('disabled', true);
             $.ajax({
-                'url': url_app + '/' + $this.attr('action'),
+                'url': url_app + '/' + $this.data('action'),
                 'type': 'POST',
                 'data': data,
                 dataType: 'json'

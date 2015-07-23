@@ -175,7 +175,7 @@
 			<div class="alert alert-warning" id="mensaje-registro-visitante" style="display	:none;">
 				Este persona se encuentra registrada como personal de la institución.
 			</div>
-			<?php echo $this->Form->create($persona, ['action' => 'registrarVisitante', 'id' => 'frm-visitante']) ?>
+			<?php echo $this->Form->create($persona, ['data-action' => '/persona/registrarVisitante', 'id' => 'frm-visitante']) ?>
 			<input type="hidden" name="visitante_id" value="">
 			<input type="hidden" name="persona_id" value="">
 			<div class="panel panel-default">
@@ -263,14 +263,13 @@
 			</div>
 			<hr>
 		</div>
-		<div class="modal-footer">			
+		<div class="modal-footer">
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 				<button class="btn btn-primary" id="btn-visitante">Guardar</button>
 			</div>
-		</div>	
+		</div>
 			<?php echo $this->Form->end() ?>
-	      
 	    </div>
 	  </div>
 	</div>
