@@ -50,7 +50,7 @@ class UsuarioController extends AppController
 			$this->request->data['login_usuario']='';
 		}
 
-		if (!empty($this->request->data['nombre_usuario'])) {			
+		if (!empty($this->request->data['nombre_usuario'])) {
 			$usuarios=$usuarios->where( ['upper(p.persona_nombres) LIKE' => '%'.strtoupper($this->request->data['nombre_usuario']).'%' ] );
 		}else{
 			$this->request->data['nombre_usuario']='';

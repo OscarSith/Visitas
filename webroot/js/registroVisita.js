@@ -57,16 +57,16 @@ function getData (id, obj) {
     }
 
     if ($form.attr('id') == 'frm-visitante-upd') {
-        url = '../persona/showByVisitanteId/';
+        url = '/persona/showByVisitanteId/';
         view = 'v';
     }
 
     if ($form.attr('id') == 'frm-updvisita') {
-        url = '../persona/show/';
+        url = '/persona/show/';
         view = 'p';
     }
 
-    $.getJSON(url + id, function(rec) {
+    $.getJSON(url_app + url + id, function(rec) {
         var documento = null,
             nombre = null,
             apellidoPat = null,
@@ -119,20 +119,19 @@ function getData (id, obj) {
         var $form = $(obj).closest('form'),
             url = '/persona/showByEmpresaID/';
 
-        $.getJSON(url + id, function(rec) {
+        $.getJSON(url_app + url + id, function(rec) {
 
             if( rec.id == 1 ) {
                 $('#btn-visitante').prop('disabled', true);
                 $('#mensaje-registro-visitante').show();
             }
             $form.find('[name=personal_emp_id]').val('');
-            $form.find('[name=ruc_numero]').val(rec.persona.p.documento_numero);            
+            $form.find('[name=ruc_numero]').val(rec.persona.p.documento_numero);
             $form.find('[name=empresa_nombre]').val(rec.persona.p.persona_nombres);
             $form.find('[name=empresa_id]').val(rec.persona.id);
 
             $form.find('[name=empresa_nombre]').prop('disabled', true);
             $form.find('[name=ruc_numero]').prop('disabled', true);
-             
         });
     }
 
@@ -148,7 +147,7 @@ function getData (id, obj) {
 
             $inputs.prop('disabled', true);
             $.ajax({
-                'url': $this.attr('action'),
+                'url': url_app + '/' + $this.attr('action'),
                 'type': 'POST',
                 'data': data,
                 dataType: 'json'
@@ -174,7 +173,7 @@ function getData (id, obj) {
 
         $inputs.prop('disabled', true);
         $.ajax({
-            'url': $this.attr('action'),
+            'url': url_app + '/' + $this.attr('action'),
             'type': 'POST',
             'data': data,
             dataType: 'json'
@@ -211,7 +210,7 @@ function getData (id, obj) {
     var $buscar = $('#ruc_numero');
     if ($buscar.length) {
         var optiones = {
-            serviceUrl: '/persona/searchByRuc',
+            serviceUrl: url_app + '/' + '/persona/searchByRuc',
             minChars: 3,
             onSelect: function (suggestion) {
                 var $this = $(this),
@@ -226,7 +225,7 @@ function getData (id, obj) {
 
     if ($search.length) {
         var options = {
-            serviceUrl: '/persona/searchByDni',
+            serviceUrl: url_app + '/' + '/persona/searchByDni',
             minChars: 3,
             onSelect: function (suggestion) {
                 var $this = $(this),
@@ -243,10 +242,10 @@ function getData (id, obj) {
         $search.autocomplete(options);
 
         var dniOptions = $.extend(true, {}, options);
-        dniOptions.serviceUrl = '/persona/search';
+        dniOptions.serviceUrl = url_app + '/persona/search';
 
         var dniOptionsUpd = $.extend(true, {}, options);
-        dniOptionsUpd.serviceUrl = '/persona/search';
+        dniOptionsUpd.serviceUrl = url_app + '/persona/search';
 
         $('#search_persona_visita').autocomplete(dniOptions);
 

@@ -37,13 +37,11 @@
               
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <?php echo $this->Html->image('/js/dist/img/user2-160x160.jpg', ['alt' => 'Usuario','class'=>'user-image']);?>
                   <span class="hidden-xs"><?php echo $authUser ?></span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <?php echo $this->Html->image('/js/dist/img/user2-160x160.jpg', ['alt' => 'Usuario']);?>
                     <p>
                       <?php echo $authUser ?>
                       <small><?php $fecha=getdate(); echo $fecha['mday'].'/'.$fecha['mon'].'/'.$fecha['year'].'<br>'; ?>
@@ -84,11 +82,11 @@
             <li class="header">OPCIONES</li>
             <?php if ( $codPerfil!=2 ) { ?>
             <li <?= ($titleP=='Dashboad')?"class='active'":""  ?>>
-                <a href="/dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                <?php echo $this->Html->link('<i class="fa fa-dashboard"></i> <span>Dashboard</span>', '/dashboard', ['escape' => false]); ?>
             </li>
 
             <li <?= ($titleP=='Calendario de Visitas')?"class='active'":""  ?>>
-                <a href="/visita/vercalendario"><i class="fa fa-calendar"></i> <span>Agenda</span></a>
+                <?php echo $this->Html->link('<i class="fa fa-calendar"></i> <span>Agenda</span>', '/visita/vercalendario', ['escape' => false]); ?>
             </li>
             <?php } ?>
             
@@ -98,10 +96,10 @@
                 </a>
                 <ul class="treeview-menu">
                     <li <?= ($title=='Registro de Visitas')?"class='active'":"" ?>>
-                        <a href="/persona"><i class="fa fa-fw fa-dashboard"></i> Registrar Visita</a>
+                      <?php echo $this->Html->link('<i class="fa fa-fw fa-dashboard"></i> Registrar Visita','/persona', ['escape' => false]); ?>
                     </li>
                     <li <?= ($title=='Listado de visitas')?"class='active'":"" ?>>
-                        <a href="/persona/visitas"><i class="fa fa-fw fa-edit"></i> Visitas</a>
+                      <?php echo $this->Html->link('<i class="fa fa-fw fa-edit"></i> Visitas', "/persona/visitas", ['escape' => false]); ?>
                     </li>
                 </ul>
             </li>
@@ -113,10 +111,10 @@
                 </a>
                 <ul class="treeview-menu">
                     <li <?= ($title=='Usuarios')?"class='active'":"" ?>>
-                        <a href="/usuario"><i class="fa fa-list fa-fw"></i> Usuarios</a>
+                        <?php echo $this->Html->link('<i class="fa fa-list fa-fw"></i> Usuarios', '/usuario', ['escape' => false]) ?>
                     </li>
                     <li <?= ($title=='Motivos')?"class='active'":"" ?>>
-                        <a href="/motivo"><i class="fa fa-fw fa-plus"></i> Motivos</a>
+                        <?php echo $this->Html->link('<i class="fa fa-fw fa-plus"></i> Motivos', '/motivo', ['escape' => false]) ?>
                     </li>
                 </ul>
             </li>
@@ -192,6 +190,7 @@
           $(e).parent().removeClass('has-error').addClass('has-success');
         }
       };
+      var url_app = 'http://<?php echo $_SERVER['HTTP_HOST'] . '/PyVisita' ?>';
     </script>
     <!-- Bootstrap 3.3.2 JS -->
 	  <?= $this->Html->script('../bower_components/bootstrap/dist/js/bootstrap.min') ?>
@@ -206,7 +205,7 @@
     <?= $this->Html->script('bootstrap-datepicker.es') ?>
     <?= $this->Html->script('bootstrap-timepicker') ?>    
     <?= $this->Html->script('bootstrap-colorpicker.min') ?>
-    <?= $this->Html->script('chosen.jquery.min') ?>    
+    <?= $this->Html->script('chosen.jquery.min') ?>
     
     <?= $this->Html->script('registroVisita') ?>
     <?= $this->Html->script('visita') ?>
@@ -216,61 +215,70 @@
     <?= $this->Html->script('jquery.canvasjs.min') ?>
     <?= $this->Html->script('excanvas') ?>
     <script type="text/javascript">
-    $('#calendar').fullCalendar({
-            header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
-        },
-        defaultDate: new Date(),
-        editable: true,
-        lang: 'es',
-        events: '/visita/getvisitas'
-    });
+    var $calendar = $('#calendar');
+    if ($calendar.length) {
+      $('#calendar').fullCalendar({
+              header: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'month,agendaWeek,agendaDay'
+          },
+          defaultDate: new Date(),
+          editable: true,
+          lang: 'es',
+          events: '/visita/getvisitas'
+      });
+    }
 
-    var dataEstado = [];
-        $.getJSON("/visita/visitantesbyestado", function (data) {
-          var contvisitas=0;
-            for (var i = 0; i <= data.length -1; i++) {
-              var estado= ( data[i].estado=='R' ) ? 'Registrado': ( data[i].estado=='F' )? 'Finalizado': ( data[i].estado=='D' )? 'En Desarrollo':( data[i].estado=='A' )? 'Anulado':'Si definir';
-              contvisitas=contvisitas+data[i].count;
-             dataEstado.push({ label: estado, y: parseInt(data[i].count) });
-           }
-           var chart = new CanvasJS.Chart("barContainer", {
-               theme: "theme1",//theme1
-               title: {
-                   text: "Visitas por Estado"
-                },
-                legend: { text: "Visitas" },
-                // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
-                data: [ {                    
-                         type: "doughnut",
-                         dataPoints: dataEstado
-                       }
-                   ]
-           });
-           chart.render();
-       });
-     var dataOficina = [];
-       $.getJSON("/visita/visitantesbyoficina", function (data) {
-           for (var i = 0; i <= data.length -1; i++) {
-               dataOficina.push({ label: data[i].o.organigrama_nombre, y: parseInt(data[i].count) });
-            }
-            var chart = new CanvasJS.Chart("pieContainer", {
-                theme: "theme1",//theme1
-                title: {
-                    text: "Visitas por Oficina"
-                },
-                // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
-                data: [ {                    
-                          type: "bar",
-                          dataPoints: dataOficina
-                        }
-                    ]
-            });
-            chart.render();
-        });  
-
+    var dataEstado = [],
+        dataOficina = [],
+        $pieContainer = $('#pieContainer');
+    if ($pieContainer.length) {
+      $.getJSON( url_app + "/visita/visitantesbyestado", function (data) {
+        var contvisitas=0;
+          for (var i = 0; i <= data.length -1; i++) {
+            var estado= ( data[i].estado=='R' ) ? 'Registrado': ( data[i].estado=='F' )? 'Finalizado': ( data[i].estado=='D' )? 'En Desarrollo':( data[i].estado=='A' )? 'Anulado':'Si definir';
+            contvisitas=contvisitas+data[i].count;
+           dataEstado.push({ label: estado, y: parseInt(data[i].count) });
+         }
+         var chart = new CanvasJS.Chart("barContainer", {
+             theme: "theme1",//theme1
+             title: {
+                 text: "Visitas por Estado"
+              },
+              legend: { text: "Visitas" },
+              // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
+              data: [ {                    
+                       type: "doughnut",
+                       dataPoints: dataEstado
+                     }
+                 ]
+         });
+         chart.render();
+      });
+      $.getJSON(url_app + "/visita/visitantesbyoficina", function (data) {
+         for (var i = 0; i <= data.length -1; i++) {
+             dataOficina.push({ label: data[i].o.organigrama_nombre, y: parseInt(data[i].count) });
+          }
+          var chart = new CanvasJS.Chart("pieContainer", {
+              theme: "theme1",//theme1
+              title: {
+                  text: "Visitas por Oficina"
+              },
+              // Change type to "bar", "splineArea", "area", "spline", "pie",etc.
+              data: [ {
+                    type: "bar",
+                    dataPoints: dataOficina
+                  }
+              ]
+          });
+          chart.render();
+      });
+    }
+    var $registerUser = $('#register-user');
+    if ($registerUser.length) {
+      $registerUser.validate(validateOptions);
+    }
   </script>
   </body>
 </html>

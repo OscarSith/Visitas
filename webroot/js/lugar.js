@@ -1,6 +1,6 @@
 $("#modal-editar-lugar").on('show.bs.modal', function(e){
    	
-   	var $tr = $(e.relatedTarget).closest('tr');   	
+   	var $tr = $(e.relatedTarget).closest('tr');
    	var form = $("#frm-editar-lugar");
 
    	$('[name=id]',form).val($tr.data('id'));

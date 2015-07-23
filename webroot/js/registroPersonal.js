@@ -2,7 +2,7 @@ var $search = $('#documento_numero');
 
 function getData (id, obj) {
     var $form = $(obj).closest('form'),
-    	url = '../persona/showByPersonalId/';
+    	url = url_app + '/persona/showByPersonalId/';
 
     $.getJSON(url + id, function(rec) {
         
@@ -38,7 +38,7 @@ if ($search.length) {
     $search.autocomplete(options);
 
     var dniOptions = $.extend(true, {}, options);
-    	dniOptions.serviceUrl = '/persona/searchByDni';
+    	dniOptions.serviceUrl = url_app + '/persona/searchByDni';
     	
     $('#documento_numero').autocomplete(dniOptions);
 }

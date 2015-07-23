@@ -3,7 +3,7 @@ $(".chosen-select").chosen({max_selected_options: 5});
 $('#content-visita').on('change', '.organigrama_cbo', function(e) {
 	var $this = $(this),
         $body = $this.closest('div.panel-body');
-	$.getJSON('persona/getOrganigramaByPadre/' + $this.val(), function(rec) {
+	$.getJSON(url_app + '/persona/getOrganigramaByPadre/' + $this.val(), function(rec) {
         var size = rec.length,
             place = $this.data('place') == null ? 1 : $this.data('place');
         if (size) {
