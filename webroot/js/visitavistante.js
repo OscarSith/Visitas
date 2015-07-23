@@ -1,11 +1,3 @@
-	
-//formato de hora de ingreso
-	$('#visita_horaingreso').timepicker({
-	    minuteStep: 30,
-	    showInputs: true,
-	    disableFocus: true
-	});
-
 //muestra datos de la tabla en el modal
 	$("#modal-horaingreso").on('show.bs.modal', function(e){
     	var $tr = $(e.relatedTarget).closest('tr');
@@ -46,4 +38,14 @@
 		.on('hide.bs.modal', function() {
 			$(this).find('form [name=id]').val('');
 		});
-    
+
+	$('#modal-confirm-activar')
+		.on('show.bs.modal', function(e) {
+			var id = $(e.relatedTarget).closest('tr').data('id'),
+				$form = $(e.currentTarget).find('form');
+
+			$form.children('[name=id]').val(id);
+		})
+		.on('hide.bs.modal', function() {
+			$(this).find('form [name=id]').val('');
+		});		

@@ -280,7 +280,7 @@
 		<div class="row">
 			<label class="control-label col-sm-2">{{ label }}</label>
 			<div class="col-sm-4">
-				<select name="organigrama" class="form-control organigrama_cbo">
+				<select name="organigrama" class="form-control organigrama_cbo" data-place="{{ place }}">
 					{{{ options }}}
 				</select>
 			</div>

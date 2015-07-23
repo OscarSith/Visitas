@@ -1,22 +1,29 @@
 $("#Visitavisita_fecha").datepicker({
-        format: "dd/mm/yyyy",
-        autoclose: true,
-        language: "es",
-        startDate: moment().subtract(2, 'd')._d
+    format: "dd/mm/yyyy",
+    autoclose: true,
+    language: "es",
+    startDate: moment().subtract(0, 'd')._d
 });
 
 $("#Visitavisita_fechaF").datepicker({
-        format: "dd/mm/yyyy",
-        autoclose: true,
-        language: "es",
+    format: "dd/mm/yyyy",
+    autoclose: true,
+    language: "es",
 });
-
 
 $('#Visita_horaprogramada').timepicker({
     minuteStep: 30,
     showInputs: true,
     disableFocus: true
 });
+
+$('#Visita_horaingreso').timepicker({
+    minuteStep: 30,
+    showInputs: true,
+    disableFocus: true
+});
+
+$("#frm-visita, #frm-visitante").validate(validateOptions);
 
 function agregarVisitanteTable (values, tipo) {
     var $this = $('#tblVisitantes'),
@@ -80,8 +87,8 @@ function getData (id, obj) {
             apellidoMat = rec.persona_apemat;
 
             $form.find('[name=tipodocumento_id]').val(rec.tipodocumento_id);
-            $form.find('[name=personal_id]').val(rec[view].id);
-            $form.find('[name=hdnorganigrama_id]').val(rec[view].organigrama_id);
+            $form.find('[name=personal_id]').val(rec.p.id);
+            $form.find('[name=hdnorganigrama_id]').val(rec.s.organigrama_id);
         }
 
         $form.find('[name=documento_numero]').val(documento);
@@ -90,15 +97,19 @@ function getData (id, obj) {
         $form.find('[name=persona_apemat]').val(apellidoMat);
 
         if (view === 'p') {
-            $form.find('[name=cargo_id]').val(rec[view].cargo_id);
-        } else {            
+            $form.find('[name=cargo_id]').val(rec.s.cargo_id);
+            $form.find('[name=cargo_id]').trigger("chosen:updated");
+        } else {
             if (rec.empresa.p) {
                 $form.find('[name=empresa_nombre]').prop('disabled', true);
                 $form.find('[name=ruc_numero]').prop('disabled', true);
                 $form.find('[name=empresa_id]').val(rec.empresa.empresa_id);
-                $form.find('[name=empresavisitante_id]').val(rec.empresa.id);
                 $form.find('[name=empresa_nombre]').val(rec.empresa.p.persona_nombres);
                 $form.find('[name=ruc_numero]').val(rec.empresa.p.documento_numero);
+                if( rec.empresa.id==1 ){
+                    $('#btn-visitante').prop('disabled', true);
+                    $('#mensaje-registro-visitante').show();
+                }
             }
         }
     });
@@ -108,9 +119,13 @@ function getData (id, obj) {
         var $form = $(obj).closest('form'),
             url = '/persona/showByEmpresaID/';
 
-        $.getJSON(url + id, function(rec) {              
-            
-            $form.find('[name=empresavisitante_id]').val('');            
+        $.getJSON(url + id, function(rec) {
+
+            if( rec.id == 1 ) {
+                $('#btn-visitante').prop('disabled', true);
+                $('#mensaje-registro-visitante').show();
+            }
+            $form.find('[name=personal_emp_id]').val('');
             $form.find('[name=ruc_numero]').val(rec.persona.p.documento_numero);            
             $form.find('[name=empresa_nombre]').val(rec.persona.p.persona_nombres);
             $form.find('[name=empresa_id]').val(rec.persona.id);
@@ -122,27 +137,32 @@ function getData (id, obj) {
     }
 
     $('#frm-visitante').on('submit', function(e) {
-        e.preventDefault();
-        var $this = $(this),
-            data = $this.serialize(),
-            $inputs = $this.find(':input');
 
-        $inputs.prop('disabled', true);
-        $.ajax({
-            'url': $this.attr('action'),
-            'type': 'POST',
-            'data': data,
-            dataType: 'json'
-        }).done(function(rec) {
-            $this.trigger('reset');
-            agregarVisitanteTable(rec,'insert');
-            $this.closest('.modal').modal('hide');
-        }).fail(function(xhr) {
-            alert(xhr.responseJSON.message);
-            console.log();
-        }).always(function() {
-            $inputs.prop('disabled', false);
-        })
+         var isvalidate=$("#frm-visitante").valid();
+        if(isvalidate)
+        {
+            e.preventDefault();
+            var $this = $(this),
+                data = $this.serialize(),
+                $inputs = $this.find(':input');
+
+            $inputs.prop('disabled', true);
+            $.ajax({
+                'url': $this.attr('action'),
+                'type': 'POST',
+                'data': data,
+                dataType: 'json'
+            }).done(function(rec) {
+                $this.trigger('reset');
+                agregarVisitanteTable(rec,'insert');
+                $this.closest('.modal').modal('hide');
+            }).fail(function(xhr) {
+                alert(xhr.responseJSON.message);
+                console.log();
+            }).always(function() {
+                $inputs.prop('disabled', false);
+            })
+        }    
     });
 
 
@@ -171,7 +191,7 @@ function getData (id, obj) {
     });
 
     $('#tblVisitantes').on('click', '.btn-danger', function() {
-        if(confirm('Seguro de eliminar esta persona de esta visita?')) {
+        if(confirm('¿Seguro de eliminar esta persona de esta visita?')) {
             var $this = $(this),
                 $tr = $this.closest('tr');
 
@@ -201,10 +221,10 @@ function getData (id, obj) {
                     $this.data('exec', true);
                 }
             }
-        };    
+        };
     }
+
     if ($search.length) {
-        
         var options = {
             serviceUrl: '/persona/searchByDni',
             minChars: 3,
@@ -240,16 +260,18 @@ function getData (id, obj) {
               $('#search_persona_visita_upd').val('');
               var $this = $(this);
               var $text = $this.parent().addClass('visibility-hidden').prev().prop('readonly', false).focus();
-              $text.closest('.panel-body').find(':input').val('');
+              $text.closest('form').find(':input').val('').prop('disabled', false);
+              $('#btn-visitante').prop('disabled', false);
+              $('#mensaje-registro-visitante').hide();
               $text.data('exec', false);
         });
     }
 
-$('#modal-visitante').on('hide.bs.modal', function() {
-    var $this = $(this);
-    $this.find('[name=visitante_id]').val('');
-    $this.find('[name=persona_id]').val('');
-    $this.find('[name=empresa_id]').val('');
-    $this.find('[name=empresavisitante_id]').val('');
-    $this.find('.btn-remove-text-autoc').click();
-});
+    $('#modal-visitante').on('hide.bs.modal', function() {
+        var $this = $(this);
+        $this.find('[name=visitante_id]').val('');
+        $this.find('[name=persona_id]').val('');
+        $this.find('[name=empresa_id]').val('');
+        $this.find('[name=empresavisitante_id]').val('');
+        $this.find('.btn-remove-text-autoc').click();
+    });

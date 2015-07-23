@@ -285,14 +285,13 @@
 			</div>
 			<hr>
 		</div>
-		<div class="modal-footer">			
+		<div class="modal-footer">
 			<div class="text-right">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 				<button class="btn btn-primary">Guardar</button>
 			</div>
-		</div>	
+		</div>
 			<?php echo $this->Form->end() ?>
-	      
 	    </div>
 	  </div>
 	</div>

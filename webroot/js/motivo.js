@@ -1,10 +1,10 @@
 $("#motivo_color").colorpicker();
 $("#motivo_colorupd").colorpicker();
 
-$("#modal-editar").on('show.bs.modal', function(e){
+$("#modal-editar-motivo").on('show.bs.modal', function(e){
    	
    	var $tr = $(e.relatedTarget).closest('tr');   	
-   	var form = $("#frm-editar");
+   	var form = $("#frm-editar-motivo");
 
    	$('[name=id]',form).val($tr.data('id'));
    	$('[name=motivo_descripcion]',form).val($tr.children(':eq(1)').text().trim());
@@ -12,7 +12,7 @@ $("#modal-editar").on('show.bs.modal', function(e){
 
 });
 
-$("#frm-motivo, #frm-editar").validate(validateOptions);
+$("#frm-motivo, #frm-motivo-editar").validate(validateOptions);
 
 // $("#signupForm").validate({
 // 			rules: {
