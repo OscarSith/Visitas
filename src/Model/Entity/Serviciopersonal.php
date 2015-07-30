@@ -9,6 +9,6 @@ class Serviciopersonal extends Entity
 		'sede_id' => true,
 		'organigrama_id' => true,
 		'cargo_id' => true,
-		'usuario_creador' => true
+		'usuario_registra' => true
 	];
 }	

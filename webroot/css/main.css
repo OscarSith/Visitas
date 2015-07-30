@@ -9,3 +9,9 @@
 .visibility-hidden {
 	visibility: hidden;
 }
+.mb0 {
+	margin-bottom: 0
+}
+.pb0 {
+	padding-bottom: 0
+}

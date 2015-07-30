@@ -13,10 +13,8 @@
 				<div class="col-sm-3">
 					Estado
 				</div>
-				<div class="col-sm-3">
-					
-				</div>
-			</div>		
+				<div class="col-sm-3"></div>
+			</div>
 			<div class="row">
 				<div class="col-sm-3">
 					<input type="text" class="form-control" name="login_usuario" id="login_usuario" placeholder="Usuario Login" maxlength="35" value="<?= $valores['login_usuario'];?>"/>
@@ -28,10 +26,10 @@
 					<?php echo $this->Form->select( 'estado', $estados, ['class' => 'form-control', 'empty' => 'Seleccione', 'default' => $valores['estado'] ]) ?>
 				</div>
 				<div class="col-sm-3">
-					<?php echo $this->Form->button(__('<i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;&nbsp;Buscar'), ['class' => 'btn btn-danger']); ?>			
+					<?php echo $this->Form->button(__('<i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;&nbsp;Buscar'), ['class' => 'btn btn-danger']); ?>	
 					<a class="btn btn-success" href="usuario/registrar"><i class="fa fa-plus fa-fw"></i>  Registrar</a>
 				</div>
-			</div>		
+			</div>
 		</div>
 	</div>
 
@@ -72,7 +70,8 @@
 							</button>
 							<ul class="dropdown-menu dropdown-menu-right" role="menu">
 								<li><a href="usuario/edit/<?php echo $key->id ?>"><i class="fa fa-edit fa-fw"></i>Editar</a></li>
-								<li><a href="#" class="activar" data-toggle="modal"><i class="fa fa-edit fa-fw"></i>Activar</a></li>
+								<li><a href="#" class="activar" data-toggle="modal"><i class="fa fa-refresh fa-fw"></i>Activar</a></li>
+								<li><a href="usuario/organigrama/<?php echo $key->p['id'] ?>"><i class="fa fa-sitemap fa-fw"></i>Agregar Servicio</a></li>
 							</ul>
 						</div>
 					</td>

@@ -33,7 +33,7 @@ class UsuarioController extends AppController
 		$estados = $this->getDefaultCombosMantenimiento();
 
 		$usuarios = $this->Usuario->find()
-					->select(['id', 'usuario_creador', 'usuario_login', 'p.persona_nombres', 'p.documento_numero', 'estado', 'tipo_usuario'])
+					->select(['id', 'p.id', 'usuario_creador', 'usuario_login', 'p.persona_nombres', 'p.documento_numero', 'estado', 'tipo_usuario'])
 					->join([
 						'table' => 'Persona',
 						'alias' => 'p',
@@ -44,7 +44,7 @@ class UsuarioController extends AppController
 						['pl' => 'Personal'], ['p.id = pl.persona_id']
 					);
 
-		if (!empty($this->request->data['login_usuario'])) {			
+		if (!empty($this->request->data['login_usuario'])) {
 			$usuarios=$usuarios->where( ['usuario.usuario_login LIKE' => '%'.$this->request->data['login_usuario'].'%' ] );
 		}else{
 			$this->request->data['login_usuario']='';
@@ -305,4 +305,51 @@ class UsuarioController extends AppController
     {
         return $this->redirect($this->Auth->logout());
     }
+
+    public function organigrama($id)
+    {
+    	$title = 'Agregar un Organigrama';
+    	$titleP = 'Mantenimientos';
+    	$authUser = $this->Auth->user('usuario_login');
+    	$personal_id = $id;
+
+		$this->loadModel('Organigrama');
+		$this->loadModel('Sede');
+
+		$organigramas = $this->Organigrama->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'organigrama_nombre'
+		]);
+
+		$sedes = $this->Sede->find('list',  [
+            'keyField' => 'id',
+            'valueField' => 'sede_nombre'
+        ]);
+
+    	$this->set(compact('organigramas', 'title', 'titleP', 'authUser', 'sedes', 'personal_id'));
+    }
+
+    public function addOtherService()
+    {
+    	if ($this->request->is('post')) {
+	    	$this->loadModel('Serviciopersonal');
+
+	    	$this->request->data['cargo_id'] = 1;
+	    	$this->request->data['usuario_registra'] = $this->Auth->user('usuario_login');
+	    	$this->request->data['organigrama_id'] = $this->request->data('organigrama');
+
+	    	$servPersonal = $this->Serviciopersonal->newEntity();
+			$servPersonal = $this->Serviciopersonal->patchEntity($servPersonal, $this->request->data);
+
+			if(!$this->Serviciopersonal->save($servPersonal)) {
+				$this->Flash->error(__('No se pudo agregar los datos, intentelo de nuevo'));
+				return $this->redirect($this->referer());
+			}
+
+			$this->Flash->success(__('Datos agregados con exito'));
+	        return $this->redirect(['action' => 'index']);
+	    } else {
+	    	return $this->redirect(['action' => 'index']);
+	    }
+	}
 }

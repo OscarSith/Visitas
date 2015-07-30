@@ -214,6 +214,18 @@
 
     <?= $this->Html->script('jquery.canvasjs.min') ?>
     <?= $this->Html->script('excanvas') ?>
+    <script id="cbo-organigramas" type="text/x-handlebars-template">
+      <div class="form-group form-group-sm">
+        <div class="row">
+          <label class="control-label col-sm-2">{{ label }}</label>
+          <div class="col-sm-4">
+            <select name="organigrama" class="form-control organigrama_cbo" data-place="{{ place }}">
+              {{{ options }}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </script>
     <script type="text/javascript">
     var $calendar = $('#calendar');
     if ($calendar.length) {
