@@ -157,7 +157,7 @@
         <div class="pull-right hidden-xs">
           <b>Version</b> 1.0
         </div>
-        <strong>Copyright &copy; 2015 <a class="red" href="http://onagi.gob.pe">ONAGI - Oficina Nacional de Gobierno Interior</a>.</strong> Todos los derechos reservados.
+        <strong>Copyright &copy; <?php echo date('Y') ?> <a class="red" href="http://onagi.gob.pe">ONAGI - Oficina Nacional de Gobierno Interior</a>.</strong> Todos los derechos reservados.
       </footer>
     <?= $this->Html->script('../bower_components/jquery/dist/jquery.min') ?> 
     <?= $this->Html->script('jquery.validate.min.js') ?>
@@ -230,15 +230,15 @@
     var $calendar = $('#calendar');
     if ($calendar.length) {
       $('#calendar').fullCalendar({
-              header: {
-              left: 'prev,next today',
-              center: 'title',
-              right: 'month,agendaWeek,agendaDay'
-          },
-          defaultDate: new Date(),
-          editable: true,
-          lang: 'es',
-          events: '/visita/getvisitas'
+          header: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'month,agendaWeek,agendaDay'
+        },
+        defaultDate: new Date(),
+        editable: true,
+        lang: 'es',
+        events: '/visita/getvisitas'
       });
     }
 
@@ -287,7 +287,7 @@
           chart.render();
       });
     }
-    var $registerUser = $('#register-user');
+    var $registerUser = $('#frm-register-user');
     if ($registerUser.length) {
       $registerUser.validate(validateOptions);
     }

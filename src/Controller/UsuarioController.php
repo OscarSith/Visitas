@@ -185,6 +185,7 @@ class UsuarioController extends AppController
 
 			$personal = $this->Personal->newEntity();
 			$this->request->data['persona_id'] = $persona->id;
+			$this->request->data['empresa_id'] = 1;
 			$personal = $this->Personal->patchEntity($personal, $this->request->data);
 
 			if(!$this->Personal->save($personal)) {
