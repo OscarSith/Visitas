@@ -137,7 +137,7 @@ class UsuarioController extends AppController
 		    			if ( $data->perfil_id == 2 ) {
 		    				
 		    				$this->request->session()->write('usuario.organigrama', 1);
-		    				return $this->redirect('/persona');		    				
+		    				return $this->redirect('/persona');
 		    			}else if( $data->perfil_id == 1 ) {
 
 		    				$this->request->session()->write('usuario.organigrama', 1);	
@@ -193,15 +193,16 @@ class UsuarioController extends AppController
 			}
 
 			$this->request->data['tipo_usuario'] = 'E';
-			$this->request->data['persona_id'] = $persona->id;
+			$this->request->data['personal_id'] = $personal->id;
 
 			$usuario = $this->Usuario->newEntity($this->request->data);
 			if(!$this->Usuario->save($usuario)) {
 				$this->Flash->error(__('Unable to add your enterprice.'));
 			}
 
+			$this->addOtherService();
 			$this->Flash->success(__('Usuario agregado con exito.'));
-            return $this->redirect(['action' => 'index']);
+			return $this->redirect(['action' => 'index']);
 		}
 		return $this->redirect(['action' => 'registrar']);
 	}
@@ -316,30 +317,35 @@ class UsuarioController extends AppController
 
 		$this->loadModel('Organigrama');
 		$this->loadModel('Sede');
+		$this->loadModel('Cargo');
 
 		$organigramas = $this->Organigrama->find('list',  [
 			'keyField' => 'id',
 			'valueField' => 'organigrama_nombre'
 		]);
 
-		$sedes = $this->Sede->find('list',  [
-            'keyField' => 'id',
-            'valueField' => 'sede_nombre'
-        ]);
+		$cargos = $this->Cargo->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'cargo_nombre'
+		]);
 
-    	$this->set(compact('organigramas', 'title', 'titleP', 'authUser', 'sedes', 'personal_id'));
-    }
+		$sedes = $this->Sede->find('list',  [
+			'keyField' => 'id',
+			'valueField' => 'sede_nombre'
+		]);
+
+		$this->set(compact('organigramas', 'title', 'titleP', 'authUser', 'sedes', 'cargos', 'personal_id'));
+	}
 
     public function addOtherService()
     {
     	if ($this->request->is('post')) {
-	    	$this->loadModel('Serviciopersonal');
+			$this->loadModel('Serviciopersonal');
 
-	    	$this->request->data['cargo_id'] = 1;
-	    	$this->request->data['usuario_registra'] = $this->Auth->user('usuario_login');
-	    	$this->request->data['organigrama_id'] = $this->request->data('organigrama');
+			$this->request->data['usuario_registra'] = $this->Auth->user('usuario_login');
+			$this->request->data['organigrama_id'] = isset($this->request->data['organigrama']) ? $this->request->data['organigrama'] : $this->request->data['organigrama_id'];
 
-	    	$servPersonal = $this->Serviciopersonal->newEntity();
+			$servPersonal = $this->Serviciopersonal->newEntity();
 			$servPersonal = $this->Serviciopersonal->patchEntity($servPersonal, $this->request->data);
 
 			if(!$this->Serviciopersonal->save($servPersonal)) {

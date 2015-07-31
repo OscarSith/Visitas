@@ -247,7 +247,20 @@ function getData (id, obj) {
         var dniOptionsUpd = $.extend(true, {}, options);
         dniOptionsUpd.serviceUrl = url_app + '/persona/search';
 
-        $('#search_persona_visita').autocomplete(dniOptions);
+        var arr = [];
+        $('[name=organigrama_id], [name=organigrama]').each(function(id, el) {
+            arr.push($(el).val());
+        });
+        $('#search_persona_visita').autocomplete($.extend(dniOptions, {
+            params: {org: arr.join(',')},
+            onSearchStart: function(q) {
+                var arr = [];
+                $('[name=organigrama_id], [name=organigrama]').each(function(id, el) {
+                    arr.push($(el).val());
+                });
+                q.org = arr.join(',');
+            }
+        }));
 
         $('#search_persona_visita_upd').autocomplete(dniOptionsUpd);
 

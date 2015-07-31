@@ -234,7 +234,15 @@ class PersonaController extends AppController
 						'conditions' => 'persona.id = p.persona_id'
 					]
 				])
-				->where(['upper(persona_nombres) LIKE' => '%'. strtoupper($this->request->query['query']) .'%']);
+				->join([
+					'sp' => [
+						'table' => 'serviciopersonal',
+						'type' => 'inner',
+						'conditions' => 'p.id = sp.personal_id'
+					]
+				])
+				->where(['upper(persona_nombres) LIKE' => '%'. strtoupper($this->request->query['query']) .'%'])
+				->where(['sp.organigrama_id IN' =>  $this->request->query['org'] ]);
 
 		$this->toJson($data, true);
 	}
